@@ -8,7 +8,11 @@
 #   Rscript run.R                    # auto-detect stage; fetch live data
 #   Rscript run.R R16                # force a specific stage
 #   Rscript run.R --no-fetch         # skip web fetch (offline / manual data)
+#   Rscript run.R --clean            # wipe all outputs first; full clean run
 #   WC2026_NSIMS=500 Rscript run.R   # fast smoke test
+#
+# Flags can be combined:
+#   Rscript run.R --clean --no-fetch R16
 #
 # What happens on every run:
 #   1. [Optional] Fetches live results from the web (cfg$fetch_url_results),
@@ -39,10 +43,22 @@ set.seed(CFG$seed)
 # ---- Parse arguments ---------------------------------------------------------
 args      <- commandArgs(trailingOnly = TRUE)
 do_fetch  <- !("--no-fetch" %in% args)
-args      <- args[args != "--no-fetch"]
+do_clean  <- "--clean" %in% args
+args      <- args[!args %in% c("--no-fetch", "--clean")]
 stage_arg <- if (length(args) >= 1) args[1] else NULL
 
 log_msg("=== WC2026 Prediction Pipeline ===")
+
+# ---- Step 0: Clean outputs if requested --------------------------------------
+# Removes all generated files in outcomes/ so the run starts from scratch.
+# Input data (input_data/) is never touched.
+if (do_clean) {
+  log_msg("[run] --clean: wiping outcomes/ ...")
+  invisible(lapply(list.files(CFG$dir_predictions, full.names = TRUE), unlink))
+  invisible(lapply(list.files(CFG$dir_reports,     full.names = TRUE), unlink))
+  unlink(CFG$report_registry)
+  log_msg("[run] outcomes/ cleared. Proceeding with fresh run.")
+}
 
 # ---- Step 1: Web fetch (updates results.csv, tournament_state.json, bracket) -
 if (do_fetch) {

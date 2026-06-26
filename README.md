@@ -82,9 +82,28 @@ Rscript run.R R16
 # Skip web fetch (offline / manual data only):
 Rscript run.R --no-fetch
 
+# Force a clean full run (wipe all outputs, regenerate from scratch):
+Rscript run.R --clean
+
+# Flags can be combined:
+Rscript run.R --clean --no-fetch R16
+
 # Fast smoke test:
-WC2026_NSIMS=500 Rscript run.R
+WC2026_NSIMS=500 Rscript run.R --no-fetch
 ```
+
+**`--clean` wipes everything under `outcomes/`** (predictions CSVs, PDF reports,
+report creation-date registry) and then does a full fresh run. Input data in
+`input_data/` is never touched. Use it when:
+- Outputs look stale or inconsistent after editing input files
+- You want the report to show today as its creation date
+- Something went wrong mid-run and the outputs are in a bad state
+
+> `results.csv` is **not** cleared by `--clean` — it holds your live match
+> data. To reset it too (nuclear option), truncate it to the header line:
+> ```bash
+> head -1 input_data/wc2026_outcomes/results.csv > /tmp/r.csv && mv /tmp/r.csv input_data/wc2026_outcomes/results.csv
+> ```
 
 Outputs land in `outcomes/`. Open `outcomes/reports/WC2026_<stage>_report.pdf`.
 

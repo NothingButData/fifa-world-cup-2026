@@ -49,3 +49,8 @@ input CSVs in place before `load_state()` runs; it uses only base R
 `WC2026_NSIMS=500 Rscript run.R --no-fetch` (offline smoke test), then inspect
 `outcomes/predictions/*.csv` and render the PDF with
 `pdftoppm -png outcomes/reports/WC2026_*.pdf /tmp/p` to eyeball layout.
+
+## Forcing a clean run
+`Rscript run.R --clean` wipes `outcomes/` (predictions, reports, registry) then
+re-runs. Input data is never touched. Combine with `--no-fetch` or a stage arg:
+`Rscript run.R --clean --no-fetch R16`
