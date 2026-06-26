@@ -162,10 +162,15 @@ fill_open_r32 <- function(br, gp) {
   used <- used[!is.na(used) & used != ""]
   pick_slot <- function(slot) {
     if (is.na(slot) || slot == "") return(NA_character_)
-    if (grepl("^W_",  slot))  cand <- gp[gp$group == sub("^W_",  "", slot), ][order(-gp[gp$group == sub("^W_",  "", slot), ]$p_win_group), ]
-    else if (grepl("^RU_", slot)) cand <- gp[gp$group == sub("^RU_", "", slot), ][order(-gp[gp$group == sub("^RU_", "", slot), ]$p_runnerup), ]
-    else if (grepl("3RD", slot))  cand <- gp[order(-gp$p_third), ]
-    else return(NA_character_)
+    if (grepl("^W_", slot)) {
+      g <- gp[gp$group == sub("^W_", "", slot), ]
+      cand <- g[order(-g$p_win_group), ]
+    } else if (grepl("^RU_", slot)) {
+      g <- gp[gp$group == sub("^RU_", "", slot), ]
+      cand <- g[order(-g$p_runnerup), ]
+    } else if (grepl("3RD", slot)) {
+      cand <- gp[order(-gp$p_third), ]
+    } else return(NA_character_)
     cand <- cand[!(cand$team %in% used), ]
     if (nrow(cand) == 0) NA_character_ else cand$team[1]
   }
@@ -212,7 +217,6 @@ simulate_knockout <- function(state, n = NULL) {
   metrics <- c("reach_R32", "reach_R16", "reach_QF", "reach_SF", "reach_final",
                "champion", "runner_up", "third_place")
   C <- matrix(0, length(teams), length(metrics), dimnames = list(teams, metrics))
-  stage_of_match <- stats::setNames(br$stage, as.character(br$match_id))
 
   resolve <- function(slot, winners, losers) {
     if (is.na(slot) || slot == "") return(NA_character_)

@@ -39,12 +39,31 @@
 # ---- Parse a "X - Y" (or "X-Y") goal string --------------------------------
 .parse_score <- function(s) {
   # Handles "1 - 0", "2-1", "1 - 1 (AET)", "0 - 0 (5-4 p)" etc.
-  # Returns integer c(home, away) or c(NA, NA).
+  # Returns a list: regulation/ET goals (hg, ag), the penalty-shootout score
+  # (pen_h, pen_a) when present, and how the tie was decided
+  # ("regular" / "extra_time" / "penalties"). NA goals when no score yet.
   s <- trimws(as.character(s))
+  out <- list(hg = NA_integer_, ag = NA_integer_,
+              pen_h = NA_integer_, pen_a = NA_integer_, decided_by = NA_character_)
   m <- regmatches(s, regexpr("(\\d+)\\s*[–-]\\s*(\\d+)", s, perl = TRUE))
-  if (!length(m) || is.na(m[1])) return(c(NA_integer_, NA_integer_))
-  parts <- strsplit(m[1], "\\s*[–-]\\s*")[[1]]
-  as.integer(trimws(parts[1:2]))
+  if (!length(m) || is.na(m[1])) return(out)
+  parts <- as.integer(trimws(strsplit(m[1], "\\s*[–-]\\s*")[[1]]))
+  out$hg <- parts[1]; out$ag <- parts[2]
+
+  # Penalty shootout score, e.g. "(5-4 p)", "(5 - 4 pens)", "(4-2 penalties)".
+  pm <- regmatches(s, regexpr(
+    "\\(\\s*\\d+\\s*[–-]\\s*\\d+\\s*(p|pen|pens|penalties)\\s*\\)",
+    s, perl = TRUE, ignore.case = TRUE))
+  if (length(pm) && !is.na(pm[1])) {
+    pp <- as.integer(regmatches(pm[1], gregexpr("\\d+", pm[1]))[[1]])
+    out$pen_h <- pp[1]; out$pen_a <- pp[2]
+    out$decided_by <- "penalties"
+  } else if (grepl("a\\.?e\\.?t|extra[ .]?time", s, ignore.case = TRUE)) {
+    out$decided_by <- "extra_time"
+  } else {
+    out$decided_by <- "regular"
+  }
+  out
 }
 
 # ---- Map a fixturedownload round label to our internal stage code -----------
@@ -99,10 +118,13 @@
   gl <- gsub(".*\\b([A-L])\\b.*", "\\1", toupper(trimws(df$group)))
   df$grp_ltr <- ifelse(grepl("^[A-L]$", gl), gl, NA_character_)
 
-  # Parse score strings
-  sc <- t(vapply(df$result, .parse_score, integer(2)))
-  df$hg <- sc[, 1]
-  df$ag <- sc[, 2]
+  # Parse score strings (regulation/ET goals + any penalty shootout detail)
+  sc <- lapply(df$result, .parse_score)
+  df$hg         <- vapply(sc, function(x) x$hg,         integer(1))
+  df$ag         <- vapply(sc, function(x) x$ag,         integer(1))
+  df$pen_h      <- vapply(sc, function(x) x$pen_h,      integer(1))
+  df$pen_a      <- vapply(sc, function(x) x$pen_a,      integer(1))
+  df$decided_by <- vapply(sc, function(x) x$decided_by, character(1))
   df$status <- ifelse(!is.na(df$hg), "final", "scheduled")
 
   df
@@ -145,16 +167,24 @@
 }
 
 # ---- Auto-detect the current tournament stage from results ------------------
-# Returns the first stage that has fewer confirmed results than its full quota.
+# Returns the earliest stage that is not yet complete. A stage being one match
+# short (postponement, a missing row) would otherwise pin detection there
+# forever; if any LATER stage already has final results the tournament has
+# clearly moved on, so we skip past the incomplete one rather than stalling.
 auto_detect_stage <- function(results, stages) {
   quota <- c(group = 72L, R32 = 16L, R16 = 8L, QF = 4L, SF = 2L,
              third_place = 1L, final = 1L)
-  for (stg in stages) {
+  n_final <- function(stg) if (is.null(results) || nrow(results) == 0) 0L else
+             sum(results$stage == stg & results$status == "final", na.rm = TRUE)
+  for (k in seq_along(stages)) {
+    stg <- stages[k]
     q <- quota[stg]
     if (is.na(q)) next
-    n <- if (is.null(results) || nrow(results) == 0) 0L else
-         sum(results$stage == stg & results$status == "final", na.rm = TRUE)
-    if (n < q) return(stg)
+    if (n_final(stg) < q) {
+      later <- stages[-seq_len(k)]
+      if (length(later) && any(vapply(later, n_final, integer(1)) > 0L)) next
+      return(stg)
+    }
   }
   "final"
 }
@@ -162,6 +192,9 @@ auto_detect_stage <- function(results, stages) {
 # ---- Update knockout_bracket.csv: mark ties as confirmed when results exist -
 .confirm_bracket_ties <- function(bracket, results) {
   if (is.null(results) || nrow(results) == 0) return(bracket)
+  # A bracket CSV may legitimately lack the provenance `source` column; treat it
+  # as all-unconfirmed rather than erroring on bracket$source[i].
+  if (is.null(bracket$source)) bracket$source <- NA_character_
   today <- as.character(Sys.Date())
   src_tag <- paste0("reported_", today)
   for (i in seq_len(nrow(bracket))) {
@@ -226,8 +259,8 @@ fetch_live_data <- function(cfg) {
       date       = df$date[i],
       home_team  = h, away_team = a,
       home_goals = df$hg[i], away_goals = df$ag[i],
-      pens_home  = NA_integer_, pens_away = NA_integer_,
-      decided_by = if (df$status[i] == "final") "regular" else NA_character_,
+      pens_home  = df$pen_h[i], pens_away = df$pen_a[i],
+      decided_by = if (df$status[i] == "final") df$decided_by[i] else NA_character_,
       status     = df$status[i],
       source     = if (df$status[i] == "final") src_tag else "scheduled",
       stringsAsFactors = FALSE)
@@ -256,12 +289,19 @@ fetch_live_data <- function(cfg) {
     ts <- readLines(ts_path, warn = FALSE)
     cur <- regmatches(ts, regexpr('"current_stage"\\s*:\\s*"([^"]+)"', ts))
     cur <- if (length(cur)) gsub('.*"([^"]+)"\\s*$', "\\1", cur[1]) else ""
-    ts <- gsub('"current_stage"\\s*:\\s*"[^"]+"',
-               paste0('"current_stage": "', detected, '"'), ts)
-    ts <- gsub('"as_of_date"\\s*:\\s*"[^"]+"',
-               paste0('"as_of_date": "', today, '"'), ts)
-    ts <- gsub('"last_updated"\\s*:\\s*"[^"]+"',
-               paste0('"last_updated": "', today, '"'), ts)
+    # Replace a "key": "value" pair in-place. Logs (rather than silently no-op'ing)
+    # when the key is absent, so a malformed/partial state file is visible.
+    set_key <- function(lines, key, value) {
+      pat <- paste0('"', key, '"\\s*:\\s*"[^"]*"')
+      if (!any(grepl(pat, lines))) {
+        log_msg(sprintf("  [fetch] NOTE: key '%s' not found in tournament_state.json; not updated.", key))
+        return(lines)
+      }
+      gsub(pat, paste0('"', key, '": "', value, '"'), lines)
+    }
+    ts <- set_key(ts, "current_stage", detected)
+    ts <- set_key(ts, "as_of_date",    today)
+    ts <- set_key(ts, "last_updated",  today)
     writeLines(ts, ts_path)
     if (cur != detected)
       log_msg(sprintf("[fetch] Stage advanced: %s -> %s", cur, detected))
@@ -271,8 +311,10 @@ fetch_live_data <- function(cfg) {
 
   # Confirm bracket ties that now have results
   if (!is.null(bracket)) {
+    base_src <- if (is.null(bracket$source)) rep(NA_character_, nrow(bracket)) else bracket$source
     bracket2 <- .confirm_bracket_ties(bracket, merged)
-    n_conf <- sum(bracket2$source != bracket$source, na.rm = TRUE)
+    # Count rows whose source actually changed (NA -> tag counts as a change).
+    n_conf <- sum(mapply(function(a, b) !isTRUE(a == b), base_src, bracket2$source))
     if (n_conf > 0) {
       write_csv_safe(bracket2, bracket_path)
       log_msg(sprintf("[fetch] Confirmed %d bracket tie(s) in knockout_bracket.csv.", n_conf))

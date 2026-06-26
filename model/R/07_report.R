@@ -135,15 +135,21 @@ generate_report <- function(state, stage = NULL) {
   graphics::text(0.5, 0.70, paste0("Run date: ", run_date,
                                    "    (report created: ", created, ")"),
                  cex = 0.95, adj = 0.5, col = "grey30")
-  champ <- prog$team[1]; champ_p <- prog$champion[1]
-  gb <- state$scorer_projection[1, ]
+  has_prog <- !is.null(prog) && nrow(prog) > 0
+  champ   <- if (has_prog) prog$team[1] else "n/a"
+  champ_p <- if (has_prog) prog$champion[1] else NA_real_
+  sp <- state$scorer_projection
+  gb <- if (!is.null(sp) && nrow(sp) > 0) sp[1, ] else
+        data.frame(player = "n/a", team = "n/a", proj_total = NA_real_, stringsAsFactors = FALSE)
+  finalists_txt <- if (has_prog)
+    paste(utils::head(prog$team[order(-prog$reach_final)], 2), collapse = " & ") else "n/a"
   hl <- data.frame(
     Headline = c("Title pick", "Most likely finalists", "Golden Boot pick",
                  "Teams simulated", "Monte Carlo runs"),
     Value = c(sprintf("%s (%s)", champ, pct(champ_p, 1)),
-              paste(utils::head(prog$team[order(-prog$reach_final)], 2), collapse = " & "),
+              finalists_txt,
               sprintf("%s (%s) - proj %.1f", gb$player, gb$team, gb$proj_total),
-              as.character(nrow(prog)),
+              as.character(if (has_prog) nrow(prog) else 0L),
               format(cfg$n_sims, big.mark = ",")),
     stringsAsFactors = FALSE)
   .table(hl, y_top = 0.58, widths = c(0.32, 0.68), cex = 0.82, rh = 0.04, aligns = c("l", "l"))
