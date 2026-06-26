@@ -174,14 +174,24 @@ generate_report <- function(state, stage = NULL) {
   .page(); .header(paste0(label, " - Match Predictions"),
                    "Advancer = win the tie; 90' result and likeliest score also shown")
   if (!is.null(mp) && nrow(mp) > 0) {
+    tie <- if ("tie_status" %in% names(mp)) mp$tie_status else rep("", nrow(mp))
     mtab <- data.frame(
-      Match = paste(mp$home, "v", mp$away),
+      Match = paste0(paste(mp$home, "v", mp$away),
+                     ifelse(tie == "Projected", " *", "")),
+      Tie = tie,
       Advance = paste0(mp$advancer, " (", pct(mp$p_advance, 0), ")"),
-      `90' result` = mp$reg_result,
+      `90'` = mp$reg_result,
       Score = paste0(mp$score, " (", pct(mp$p_score, 0), ")"),
       check.names = FALSE, stringsAsFactors = FALSE)
-    .table(mtab, y_top = 0.9, widths = c(0.40, 0.26, 0.18, 0.16),
-           aligns = c("l", "l", "l", "l"), cex = 0.72)
+    endy <- .table(mtab, y_top = 0.9, widths = c(0.36, 0.14, 0.22, 0.15, 0.13),
+                   aligns = c("l", "l", "l", "l", "l"), cex = 0.71)
+    nproj <- sum(tie == "Projected")
+    if (nproj > 0)
+      .wrap_text(paste0("* ", nproj, " tie(s) marked Projected use model-estimated ",
+                        "participants (group stage not yet final / slot unconfirmed). ",
+                        "Confirmed ties are locked from reported results. Update ",
+                        "knockout_bracket.csv as matchups are confirmed and re-run."),
+                 y = endy - 0.02, cex = 0.68)
   } else {
     .wrap_text(paste0("No fixed matchups available for ", label,
                       " yet (participants still probabilistic). See progression ",

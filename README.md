@@ -152,6 +152,21 @@ carry a `source` column so verified facts are distinguishable from placeholders:
 See `input_data/researched_info/sources.md`. **Always refresh with official data
 before relying on predictions.**
 
+### Not-yet-finalised R32 ties
+
+The bracket is treated as a fixed **input** you update as ties confirm — the
+knockout sim simulates *results*, not *participants*. To keep this honest while
+the group stage finishes:
+
+- Every R32 tie is tagged **Confirmed** (locked from reported results) or
+  **Projected** (model-estimated participants) in
+  `match_predictions_<stage>.csv` and on the report's match-predictions page
+  (Projected ties are marked `*` with an explanatory footnote).
+- If you blank a tie's `home_team`/`away_team` in `knockout_bracket.csv`, the
+  sim fills it with the **most-likely** team for that slot (`W_x` / `RU_x` /
+  third-place pool) from the group projection, rather than silently dropping the
+  match. Once the real matchup is known, enter it and re-run to lock it in.
+
 ---
 
 ## 7. Refreshing from live sources

@@ -134,6 +134,40 @@ precompute_adv_matrix <- function(state, teams) {
   A
 }
 
+# ---- Fill blank R32 participants from the group projection ------------------
+# Graceful fallback: if a not-yet-confirmed R32 tie has an empty home/away team,
+# resolve it to the MOST-LIKELY team for that slot (W_x / RU_x / 3RD pool) from
+# simulate_groups(), de-duplicating against teams already named in the bracket.
+# Confirmed/known participants are never overwritten. Returns the bracket plus a
+# `filled` vector recording which participants were model-derived.
+fill_open_r32 <- function(br, gp) {
+  r32_idx <- which(br$stage == "R32")
+  filled <- character(0)
+  if (is.null(gp)) return(list(br = br, filled = filled))
+  used <- unique(c(br$home_team[r32_idx], br$away_team[r32_idx]))
+  used <- used[!is.na(used) & used != ""]
+  pick_slot <- function(slot) {
+    if (is.na(slot) || slot == "") return(NA_character_)
+    if (grepl("^W_",  slot))  cand <- gp[gp$group == sub("^W_",  "", slot), ][order(-gp[gp$group == sub("^W_",  "", slot), ]$p_win_group), ]
+    else if (grepl("^RU_", slot)) cand <- gp[gp$group == sub("^RU_", "", slot), ][order(-gp[gp$group == sub("^RU_", "", slot), ]$p_runnerup), ]
+    else if (grepl("3RD", slot))  cand <- gp[order(-gp$p_third), ]
+    else return(NA_character_)
+    cand <- cand[!(cand$team %in% used), ]
+    if (nrow(cand) == 0) NA_character_ else cand$team[1]
+  }
+  for (i in r32_idx) {
+    if (is.na(br$home_team[i]) || br$home_team[i] == "") {
+      t <- pick_slot(br$home_slot[i]); br$home_team[i] <- t
+      if (!is.na(t)) { used <- c(used, t); filled <- c(filled, t) }
+    }
+    if (is.na(br$away_team[i]) || br$away_team[i] == "") {
+      t <- pick_slot(br$away_slot[i]); br$away_team[i] <- t
+      if (!is.na(t)) { used <- c(used, t); filled <- c(filled, t) }
+    }
+  }
+  list(br = br, filled = filled)
+}
+
 # ---- Simulate the knockout bracket -----------------------------------------
 simulate_knockout <- function(state, n = NULL) {
   log_msg("Simulating knockout bracket ...")
@@ -141,6 +175,14 @@ simulate_knockout <- function(state, n = NULL) {
   br <- state$bracket
   if (is.null(br)) stop("knockout_bracket.csv not loaded.")
   br <- br[order(as.integer(br$match_id)), ]
+
+  # Resolve any blank R32 ties from the group projection (graceful fallback).
+  fo <- fill_open_r32(br, state$group_projection)
+  br <- fo$br; state$bracket <- br; state$r32_filled <- fo$filled
+  if (length(fo$filled))
+    log_msg(sprintf("  Filled %d open R32 slot(s) from group projection: %s",
+                    length(fo$filled), paste(fo$filled, collapse = ", ")))
+
   r32 <- br[br$stage == "R32", ]
   teams <- unique(c(r32$home_team, r32$away_team))
   teams <- teams[!is.na(teams) & teams != ""]

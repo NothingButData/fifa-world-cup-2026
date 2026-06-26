@@ -26,9 +26,13 @@ recommend <- function(state) {
       p <- match_probs(state, h, a)
       adv_h <- knockout_win_prob(state, h, a)
       res <- c("Home win", "Draw", "Away win")[which.max(c(p$p_home, p$p_draw, p$p_away))]
+      src <- if ("source" %in% names(ms)) ms$source[i] else NA_character_
+      filled_here <- (!is.null(state$r32_filled)) && (h %in% state$r32_filled || a %in% state$r32_filled)
+      tie_status <- if (!is.na(src) && grepl("^reported", src) && !filled_here) "Confirmed" else "Projected"
       data.frame(
         match_id = ms$match_id[i], stage = next_stage,
         home = h, away = a,
+        tie_status = tie_status,
         advancer = if (adv_h >= .5) h else a,
         p_advance = round(max(adv_h, 1 - adv_h), 3),
         reg_result = res,
