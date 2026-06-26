@@ -251,6 +251,13 @@ fetch_live_data <- function(cfg) {
   src_tag <- paste0("reported_", today)
   rows <- lapply(seq_len(nrow(df)), function(i) {
     stg <- df$stage[i]; if (is.na(stg)) return(NULL)
+    # Skip not-yet-played knockout fixtures. Until a knockout matchup is set,
+    # the feed names its participants with placeholders ("To be announced"),
+    # so every such fixture in a round collapses to the same generated
+    # match_id (e.g. "R16_To be announced_To be announced") and re-fetches
+    # accumulate duplicate rows. Future knockout structure already lives in
+    # knockout_bracket.csv; ingest a knockout fixture only once it is final.
+    if (stg != "group" && df$status[i] != "final") return(NULL)
     h <- df$home[i]; a <- df$away[i]
     data.frame(
       match_id   = NA_character_,          # resolved below
