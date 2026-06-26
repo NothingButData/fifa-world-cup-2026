@@ -51,8 +51,10 @@ recommend <- function(state) {
   conf_set <- confirmed_advancer_set(state)
 
   # ---- Next-stage match predictions (known matchups) ----------------------
-  next_stage <- state$cfg$stages[match(state$tournament_current_stage, state$cfg$stages)]
-  if (is.na(next_stage)) next_stage <- "R32"
+  # The stage whose ties are upcoming is the current stage itself; fall back to
+  # R32 if the state file names something not in our stage list.
+  cur_stage  <- state$tournament_current_stage
+  next_stage <- if (cur_stage %in% state$cfg$stages) cur_stage else "R32"
   ms <- br[br$stage == next_stage & !is.na(br$home_team) & br$home_team != "", ]
   preds <- NULL
   if (nrow(ms) > 0) {
@@ -86,8 +88,8 @@ recommend <- function(state) {
     head(d, k)
   }
   prog_picks <- list(
-    champion        = head(prog[order(-prog$champion), c("team", "champion")], 5),
-    finalists       = head(prog[order(-prog$reach_final), c("team", "reach_final")], 6),
+    champion        = safe_pick("champion", 5),
+    finalists       = safe_pick("reach_final", 6),
     semifinalists   = safe_pick("reach_SF", 6),
     quarterfinalists= safe_pick("reach_QF", 8),
     reach_R16       = safe_pick("reach_R16", 16)

@@ -44,7 +44,6 @@ scoreline_matrix <- function(lam_h, lam_a, rho = 0, max_goals = 8) {
 
 # 1X2 + most-likely scoreline from a scoreline matrix.
 outcome_from_matrix <- function(M) {
-  n <- nrow(M)
   idx <- which(M == max(M), arr.ind = TRUE)[1, ]
   list(
     p_home  = sum(M[lower.tri(M)]),                 # home goals > away goals
@@ -52,9 +51,7 @@ outcome_from_matrix <- function(M) {
     p_away  = sum(M[upper.tri(M)]),
     ml_home = idx[1] - 1,
     ml_away = idx[2] - 1,
-    ml_prob = M[idx[1], idx[2]],
-    exp_home = sum((0:(n - 1)) * rowSums(M)),
-    exp_away = sum((0:(n - 1)) * colSums(M))
+    ml_prob = M[idx[1], idx[2]]
   )
 }
 
