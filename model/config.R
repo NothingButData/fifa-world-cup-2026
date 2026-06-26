@@ -23,6 +23,13 @@ CFG <- list(
   n_sims   = as.integer(Sys.getenv("WC2026_NSIMS", "10000")),  # Monte Carlo runs
   seed     = 2026L,
 
+  # ---- Web-fetch settings (edit these to point at your preferred source) ----
+  fetch_enabled      = TRUE,
+  # fixturedownload.com provides a clean CSV for WC2026 fixtures + results.
+  # Set to "" or fetch_enabled=FALSE to run fully offline.
+  fetch_url_results  = "https://fixturedownload.com/download/csv/fifa-world-cup-2026",
+  fetch_timeout      = 30L,   # seconds before giving up on the download
+
   # Stage order used throughout the system.
   stages = c("group", "R32", "R16", "QF", "SF", "third_place", "final"),
 

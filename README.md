@@ -70,47 +70,72 @@ update_and_run.R          # incremental refresh + re-run (use during the cup)
 
 ## 3. Running it
 
-From the project root:
+There is **one script** for all runs — first run or subsequent update:
 
 ```bash
-# Full run for the stage in tournament_state.json (default 10,000 sims):
-Rscript run_pipeline.R
+# Auto-detect stage, fetch live data, run:
+Rscript run.R
 
 # Force a specific stage:
-Rscript run_pipeline.R R16
+Rscript run.R R16
 
-# Faster/slower simulations:
-WC2026_NSIMS=20000 Rscript run_pipeline.R
+# Skip web fetch (offline / manual data only):
+Rscript run.R --no-fetch
+
+# Fast smoke test:
+WC2026_NSIMS=500 Rscript run.R
 ```
 
 Outputs land in `outcomes/`. Open `outcomes/reports/WC2026_<stage>_report.pdf`.
+
+> `run_pipeline.R` and `update_and_run.R` are kept as thin wrappers for
+> backward compatibility — they just call `run.R`.
 
 ---
 
 ## 4. Incremental workflow (each stage of the tournament)
 
-The system is designed to **update, not rebuild**. As results come in:
+`run.R` handles everything in one go — just run it and it stays current:
 
-1. **Refresh live data** in `input_data/wc2026_outcomes/`:
-   - Add played scores to `results.csv` *or* drop a `results_update.csv`
-     (same schema) to be merged by `match_id` automatically.
-   - Fill in `knockout_bracket.csv` participants as ties confirm.
-   - Update `top_scorers.csv` goal tallies.
-2. **Refresh research** in `input_data/researched_info/`: add injury/suspension/
-   form news to the notes **and** the `*_adjustments.csv` files (the model only
-   reads the CSVs).
-3. Set `"current_stage"` in `tournament_state.json` to the stage you’re predicting.
-4. Re-run:
-
-```bash
-Rscript update_and_run.R
+```
+run.R execution order
+─────────────────────────────────────────────────────────────────────
+1. Web fetch   → downloads results CSV from fixturedownload.com,
+                 upserts into results.csv, auto-advances stage in
+                 tournament_state.json, confirms bracket ties.
+2. Merge       → if results_update.csv exists, its rows override the
+                 web data (manual corrections always win), then it’s
+                 archived.
+3. Pipeline    → ratings → group sim → bracket sim → scorers →
+                 recommendations → PDF report + prediction CSVs.
+─────────────────────────────────────────────────────────────────────
 ```
 
-This merges staged results, re-derives ratings from priors + **all** known
-results (idempotent), re-simulates, and **overwrites** predictions and the stage
-report — while the report’s original **creation date is retained** (run date is
-also shown). Ratings shrink toward priors early and trust the data more as games
-accumulate (`weight ≈ n/(n+K)`).
+**What you still update manually:**
+
+| File | When |
+|------|------|
+| `top_scorers.csv` | After each round (no clean machine-readable feed) |
+| `knockout_bracket.csv` | Only if the auto-confirmed source tags look wrong |
+| `team_adjustments.csv` / `player_adjustments.csv` | New injury / form news |
+
+**Web fetch configuration** — in `model/config.R`:
+
+```r
+CFG$fetch_enabled     = TRUE
+CFG$fetch_url_results = "https://fixturedownload.com/download/csv/fifa-world-cup-2026"
+```
+
+Set `fetch_enabled = FALSE` or pass `--no-fetch` to run fully offline.
+
+**Manual result override** — drop a `results_update.csv` (same schema as
+`results.csv`) next to `run.R` before running. It is merged by `match_id` and
+then archived. Use this for penalty-shootout details (`pens_home/away`,
+`decided_by = "penalties"`) that the web feed may not provide.
+
+Ratings are re-derived idempotently from priors + all known results on every
+run (`weight ≈ n/(n+K)`). The PDF report is overwritten but its original
+**creation date** is retained.
 
 ---
 

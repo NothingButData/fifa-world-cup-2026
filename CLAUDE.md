@@ -11,20 +11,27 @@ emits one dated PDF report per stage. See `README.md` for the full picture.
   rmarkdown, knitr, jsonlite, ggplot2.
 - **PDF reports use the base `pdf()` device** (`model/R/07_report.R`). No
   pandoc/LaTeX is available.
-- The pipeline must run with `Rscript run_pipeline.R` from the project root.
+- The pipeline must run with `Rscript run.R` from the project root.
+  (`run_pipeline.R` and `update_and_run.R` are deprecated redirect stubs.)
 
 ## Pipeline shape
-`config.R` → `00_utils` → `01_load_data` (→ `state` list) → `02_ratings` →
-`03_match_model` → `04_simulate` → `05_top_scorers` → `06_recommendations` →
-`07_report`. Each `0X_*.R` defines functions that take/return `state`.
+Single entry point: `run.R`.
+
+`config.R` → `00_utils` → `00b_fetch` (web-fetch live data into CSVs) →
+`01_load_data` (→ `state` list) → `02_ratings` → `03_match_model` →
+`04_simulate` → `05_top_scorers` → `06_recommendations` → `07_report`.
+
+Each `0X_*.R` defines functions that take/return `state`. `00b_fetch` updates
+input CSVs in place before `load_state()` runs; it uses only base R
+`download.file()` and fails gracefully when offline.
 
 ## Data is CSV-driven and append/upsert-friendly
 - Live state in `input_data/wc2026_outcomes/`; model inputs in
   `historical_stats/`; research in `researched_info/`.
 - Team names are canonicalised via `canon_team()` in `00_utils.R` — extend the
   `fixes` map there if a new spelling appears, so joins keep working.
-- `results.csv` is upserted by `match_id`; staged `results_update.csv` is merged
-  by `update_and_run.R` then archived.
+- `results.csv` is upserted by `match_id`; web-fetched rows land first, then
+  `results_update.csv` (manual corrections) is merged and archived by `run.R`.
 
 ## Incremental-update contract
 - Ratings are **idempotent**: always derived from priors + all known results, so
@@ -39,6 +46,6 @@ emits one dated PDF report per stage. See `README.md` for the full picture.
 - Tunable knobs live in `historical_params.csv` and `model/config.R`.
 
 ## Quick test
-`WC2026_NSIMS=500 Rscript run_pipeline.R` (fast smoke test), then inspect
+`WC2026_NSIMS=500 Rscript run.R --no-fetch` (offline smoke test), then inspect
 `outcomes/predictions/*.csv` and render the PDF with
 `pdftoppm -png outcomes/reports/WC2026_*.pdf /tmp/p` to eyeball layout.
