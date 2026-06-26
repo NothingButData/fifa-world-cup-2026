@@ -42,21 +42,31 @@ forecast_scorers <- function(state) {
   remaining_stages <- c("R32", "R16", "QF", "SF", "final", "third_place")
   stage_goals <- matrix(0, nrow(pl), length(remaining_stages),
                         dimnames = list(NULL, remaining_stages))
+  # Fixture-aware expected goals from the knockout simulation: each cell is
+  # E[goals in that stage] already marginalised over P(team reaches that stage)
+  # and the actual strength of the opponents they faced. Falls back to the
+  # flat average-opponent formula if the matrix isn't available.
+  egs <- state$exp_goals_by_stage
 
   for (i in seq_len(nrow(pl))) {
     t <- pl$team[i]
-    txg <- if (t %in% names(team_xg)) team_xg[[t]] else 0
-    pf_reach_sf    <- sp(t, "reach_SF")
-    pf_reach_final <- sp(t, "reach_final")
-    pp <- c(
-      R32         = sp(t, "reach_R32"),
-      R16         = sp(t, "reach_R16"),
-      QF          = sp(t, "reach_QF"),
-      SF          = sp(t, "reach_SF"),
-      final       = pf_reach_final,
-      third_place = max(pf_reach_sf - pf_reach_final, 0)
-    )
-    stage_goals[i, ] <- txg * pp * pl$share[i]
+    if (!is.null(egs) && t %in% rownames(egs)) {
+      for (s in remaining_stages)
+        if (s %in% colnames(egs)) stage_goals[i, s] <- egs[t, s] * pl$share[i]
+    } else {
+      txg <- if (t %in% names(team_xg)) team_xg[[t]] else 0
+      pf_reach_sf    <- sp(t, "reach_SF")
+      pf_reach_final <- sp(t, "reach_final")
+      pp <- c(
+        R32         = sp(t, "reach_R32"),
+        R16         = sp(t, "reach_R16"),
+        QF          = sp(t, "reach_QF"),
+        SF          = sp(t, "reach_SF"),
+        final       = pf_reach_final,
+        third_place = max(pf_reach_sf - pf_reach_final, 0)
+      )
+      stage_goals[i, ] <- txg * pp * pl$share[i]
+    }
   }
 
   pl$exp_remaining <- rowSums(stage_goals)

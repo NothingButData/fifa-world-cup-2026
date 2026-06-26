@@ -134,6 +134,20 @@ precompute_adv_matrix <- function(state, teams) {
   A
 }
 
+# Precompute expected goals for every ordered pair of teams (home vs away).
+precompute_eg_matrix <- function(state, teams) {
+  k <- length(teams)
+  EGh <- matrix(0, k, k, dimnames = list(teams, teams))
+  EGa <- matrix(0, k, k, dimnames = list(teams, teams))
+  for (i in seq_len(k)) for (j in seq_len(k)) {
+    if (i == j) next
+    eg <- expected_goals(state, teams[i], teams[j])
+    EGh[i, j] <- eg[1]   # lambda for the home side
+    EGa[i, j] <- eg[2]   # lambda for the away side
+  }
+  list(home = EGh, away = EGa)
+}
+
 # ---- Fill blank R32 participants from the group projection ------------------
 # Graceful fallback: if a not-yet-confirmed R32 tie has an empty home/away team,
 # resolve it to the MOST-LIKELY team for that slot (W_x / RU_x / 3RD pool) from
@@ -188,7 +202,12 @@ simulate_knockout <- function(state, n = NULL) {
   teams <- teams[!is.na(teams) & teams != ""]
   if (length(teams) < 2) stop("R32 participants not populated in knockout_bracket.csv")
 
-  A <- precompute_adv_matrix(state, teams)
+  A     <- precompute_adv_matrix(state, teams)
+  EGmat <- precompute_eg_matrix(state, teams)
+
+  ko_stages <- c("R32", "R16", "QF", "SF", "final", "third_place")
+  EG_acc    <- matrix(0, length(teams), length(ko_stages),
+                      dimnames = list(teams, ko_stages))
 
   metrics <- c("reach_R32", "reach_R16", "reach_QF", "reach_SF", "reach_final",
                "champion", "runner_up", "third_place")
@@ -214,6 +233,10 @@ simulate_knockout <- function(state, n = NULL) {
       else { h <- resolve(br$home_slot[i], winners, losers)
              a <- resolve(br$away_slot[i], winners, losers) }
       if (is.na(h) || is.na(a)) next
+      if (stg %in% ko_stages && h %in% teams && a %in% teams) {
+        EG_acc[h, stg] <- EG_acc[h, stg] + EGmat$home[h, a]
+        EG_acc[a, stg] <- EG_acc[a, stg] + EGmat$away[h, a]
+      }
       if (stg %in% names(stage_part)) stage_part[[stg]] <- c(stage_part[[stg]], h, a)
       p <- A[h, a]
       if (stats::runif(1) < p) { w <- h; l <- a } else { w <- a; l <- h }
@@ -234,7 +257,8 @@ simulate_knockout <- function(state, n = NULL) {
   prog <- prog[order(-prog$champion, -prog$reach_final, -prog$reach_SF),
                c("team", metrics)]
   rownames(prog) <- NULL
-  state$progression <- prog
-  state$adv_matrix   <- A
+  state$progression        <- prog
+  state$adv_matrix         <- A
+  state$exp_goals_by_stage <- EG_acc / n
   state
 }
