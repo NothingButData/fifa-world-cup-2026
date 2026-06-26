@@ -1,236 +1,182 @@
 # FIFA World Cup 2026 — Prediction System
 
-A repeatable, R-based system for forecasting the **remaining stages** of the
-2026 World Cup and maximising your score in a Scorito-style prediction game. It
-researches team/player information, maintains historical and live data, fits a
-goal-scoring model, simulates the bracket, and produces a **PDF report per
-stage** with the latest match, progression, and top-scorer predictions.
+A prediction tool for the 2026 World Cup built for a Scorito-style fantasy game.
+It pulls in live match results, estimates how strong each team is, and works out
+the most likely outcomes for every remaining match and stage — then produces a
+PDF report with the picks you need.
 
-Built entirely in **base R** (R ≥ 4.x, recommended packages only) — no external
-package installs, no LaTeX/pandoc. Reports are drawn with R's native `pdf()`
-device.
+You run one command, get a PDF. That's the workflow.
 
 ---
 
-## 1. What it predicts
+## 1. What you get
 
-| Output | File(s) |
-|--------|---------|
-| Match outcomes (winner / 90′ result / likeliest score) | `outcomes/predictions/match_predictions_<stage>.csv` |
-| Tournament progression (P reach R16 → champion) | `outcomes/predictions/progression_probabilities.csv` |
-| Group-stage projection (win group / advance) | `outcomes/predictions/group_projection.csv` |
-| Top scorers per stage | `outcomes/predictions/stage_top_scorers.csv` |
-| Golden Boot projection | `outcomes/predictions/golden_boot_projection.csv` |
-| **Stage PDF report** (dated, with recommendations) | `outcomes/reports/WC2026_<stage>_report.pdf` |
+Every run produces a PDF report and a set of CSV files in `outcomes/`:
 
----
+| What | File |
+|------|------|
+| Who wins each upcoming match, most likely scoreline | `outcomes/predictions/match_predictions_<stage>.csv` |
+| Each team's chance of reaching the quarters, semis, final, winning it | `outcomes/predictions/progression_probabilities.csv` |
+| Group stage predictions (who wins each group, who advances) | `outcomes/predictions/group_projection.csv` |
+| Golden Boot prediction (projected total goals per player) | `outcomes/predictions/golden_boot_projection.csv` |
+| Top scorer picks broken down by stage | `outcomes/predictions/stage_top_scorers.csv` |
+| **The PDF report** | `outcomes/reports/WC2026_<stage>_report.pdf` |
 
-## 2. Project structure
-
-```
-input_data/
-├── researched_info/      # qualitative research + model-readable adjustments
-│   ├── team_form_notes.md
-│   ├── team_adjustments.csv      # elo_adjustment / form_multiplier per team
-│   ├── player_adjustments.csv    # availability + form per player (injuries etc.)
-│   └── sources.md                # provenance: verified vs illustrative
-├── historical_stats/     # model inputs & historical datasets
-│   ├── team_ratings_seed.csv     # 48 teams, Elo priors
-│   ├── historical_params.csv     # global calibration (goals, home adv, ...)
-│   └── player_pool.csv           # scorers with goal-share priors
-└── wc2026_outcomes/      # live tournament state (refresh as it progresses)
-    ├── groups.csv                # the 12 groups
-    ├── results.csv               # played matches (upserted incrementally)
-    ├── knockout_bracket.csv      # bracket tree + known participants
-    ├── top_scorers.csv           # current goal tallies
-    └── tournament_state.json     # current stage + metadata
-
-model/
-├── config.R              # paths + simulation settings (edit knobs here)
-└── R/
-    ├── 00_utils.R         # CSV I/O, upsert, team-name canonicalisation
-    ├── 01_load_data.R     # load everything into one `state` list
-    ├── 02_ratings.R       # Elo + research -> attack/defense (penalised Poisson)
-    ├── 03_match_model.R   # Dixon-Coles scoreline + knockout resolution
-    ├── 04_simulate.R      # Monte Carlo: groups + bracket progression
-    ├── 05_top_scorers.R   # player goal forecasts
-    ├── 06_recommendations.R # game picks + strategy
-    └── 07_report.R        # base-R PDF report generator
-
-outcomes/
-├── predictions/          # tidy CSV predictions (overwritten each run)
-├── reports/              # WC2026_<stage>_report.pdf (overwritten each run)
-└── .report_registry.csv  # remembers each report's first-created date
-
-run_pipeline.R            # full run (initial / from scratch)
-update_and_run.R          # incremental refresh + re-run (use during the cup)
-```
+The PDF is the main deliverable. Open it after each run to see all picks in one place.
 
 ---
 
-## 3. Running it
+## 2. How to run it
 
-There is **one script** for all runs — first run or subsequent update:
+There is **one script** for everything — first run, daily refresh, or stage update:
 
 ```bash
-# Auto-detect stage, fetch live data, run:
+# Normal run (fetches latest results from the web, then generates predictions):
 Rscript run.R
 
-# Force a specific stage:
+# Run for a specific stage (e.g. if you want R16 predictions before R32 finishes):
 Rscript run.R R16
 
-# Skip web fetch (offline / manual data only):
+# Run without internet access (uses whatever data you already have):
 Rscript run.R --no-fetch
 
-# Force a clean full run (wipe all outputs, regenerate from scratch):
+# Force a completely fresh start (clears all output files, then re-runs):
 Rscript run.R --clean
 
-# Flags can be combined:
+# Combine flags as needed:
 Rscript run.R --clean --no-fetch R16
 
-# Fast smoke test:
+# Quick test run (fewer simulations, finishes in seconds):
 WC2026_NSIMS=500 Rscript run.R --no-fetch
 ```
 
-**`--clean` wipes everything under `outcomes/`** (predictions CSVs, PDF reports,
-report creation-date registry) and then does a full fresh run. Input data in
-`input_data/` is never touched. Use it when:
-- Outputs look stale or inconsistent after editing input files
-- You want the report to show today as its creation date
-- Something went wrong mid-run and the outputs are in a bad state
+**When to use `--clean`:** if the output files look wrong or you've made big
+changes to the input data and want everything recalculated from scratch. It only
+deletes the `outcomes/` folder — your match data and settings are never touched.
 
-> `results.csv` is **not** cleared by `--clean` — it holds your live match
-> data. To reset it too (nuclear option), truncate it to the header line:
+> **To also wipe match results** (full reset, rare): run this first, then `Rscript run.R`:
 > ```bash
 > head -1 input_data/wc2026_outcomes/results.csv > /tmp/r.csv && mv /tmp/r.csv input_data/wc2026_outcomes/results.csv
 > ```
 
-Outputs land in `outcomes/`. Open `outcomes/reports/WC2026_<stage>_report.pdf`.
+---
 
-> `run_pipeline.R` and `update_and_run.R` are kept as thin wrappers for
-> backward compatibility — they just call `run.R`.
+## 3. Keeping it up to date
+
+Every time you run `run.R`, it automatically:
+
+1. **Fetches the latest results** from fixturedownload.com and updates the match
+   results file
+2. **Works out which stage you're on** based on how many matches have been played
+3. **Recalculates everything** — team strengths, match predictions, progression
+   odds, top scorer forecasts
+4. **Writes the PDF report** (the original creation date is kept; the run date
+   is also shown)
+
+So for most of the tournament, you just run `Rscript run.R` and you're done.
+
+**What still needs a manual update after each round:**
+
+| What to update | File to edit | Why it's manual |
+|---|---|---|
+| Goal tallies (Golden Boot) | `input_data/wc2026_outcomes/top_scorers.csv` | No clean data feed available |
+| Injury / suspension news | `input_data/researched_info/team_adjustments.csv` | Needs judgement, not just data |
+| Player availability | `input_data/researched_info/player_adjustments.csv` | Same |
+
+**If the web fetch misses something** (e.g. penalty shootout details), you can
+correct it manually: create a file called `results_update.csv` in the same
+folder as `run.R`, using the same columns as `results.csv`, and drop in the
+corrected rows. The next run will merge them in and archive the file automatically.
+Your manual corrections always override what was fetched from the web.
 
 ---
 
-## 4. Incremental workflow (each stage of the tournament)
-
-`run.R` handles everything in one go — just run it and it stays current:
+## 4. Folder structure
 
 ```
-run.R execution order
-─────────────────────────────────────────────────────────────────────
-1. Web fetch   → downloads results CSV from fixturedownload.com,
-                 upserts into results.csv, auto-advances stage in
-                 tournament_state.json, confirms bracket ties.
-2. Merge       → if results_update.csv exists, its rows override the
-                 web data (manual corrections always win), then it’s
-                 archived.
-3. Pipeline    → ratings → group sim → bracket sim → scorers →
-                 recommendations → PDF report + prediction CSVs.
-─────────────────────────────────────────────────────────────────────
+input_data/               ← YOUR DATA (never auto-deleted)
+├── researched_info/      ← analyst notes and adjustments
+│   ├── team_adjustments.csv     ← team strength tweaks + form multipliers
+│   └── player_adjustments.csv  ← player availability and form
+├── historical_stats/     ← starting strength estimates and model settings
+│   ├── team_ratings_seed.csv    ← each team's pre-tournament strength score
+│   ├── historical_params.csv    ← model tuning knobs (goals, home advantage…)
+│   └── player_pool.csv          ← each player's typical goal-scoring share
+└── wc2026_outcomes/      ← live tournament data (updated each run)
+    ├── results.csv              ← all match scores played so far
+    ├── knockout_bracket.csv     ← who's playing who in the knockout rounds
+    ├── top_scorers.csv          ← current Golden Boot standings
+    └── tournament_state.json    ← which stage we're currently predicting
+
+model/                    ← the R code (you don't need to touch this)
+
+outcomes/                 ← GENERATED OUTPUT (safe to delete, re-created each run)
+├── predictions/          ← CSV prediction files
+└── reports/              ← PDF reports
 ```
 
-**What you still update manually:**
+---
 
-| File | When |
-|------|------|
-| `top_scorers.csv` | After each round (no clean machine-readable feed) |
-| `knockout_bracket.csv` | Only if the auto-confirmed source tags look wrong |
-| `team_adjustments.csv` / `player_adjustments.csv` | New injury / form news |
+## 5. How it works (plain English)
 
-**Web fetch configuration** — in `model/config.R`:
+**Step 1 — Team strength scores**
+Every team starts with a strength score based on their FIFA ranking and recent
+international results (stored in `team_ratings_seed.csv`). You can manually
+boost or reduce any team's score in `team_adjustments.csv` — for example, if a
+key player is injured or a team is on a strong run of form that isn't yet
+reflected in the rankings.
 
-```r
-CFG$fetch_enabled     = TRUE
-CFG$fetch_url_results = "https://fixturedownload.com/download/csv/fifa-world-cup-2026"
-```
+**Step 2 — Match predictions**
+Given two team strength scores, the model works out how many goals each side
+is likely to score — and from that, the probability of every possible scoreline
+(0-0, 1-0, 1-1, etc.). Home nations (USA, Mexico, Canada) get a small boost
+when playing at their own venues. Once enough real matches have been played,
+the model updates its estimates using the actual scores, but doesn't
+overreact to small samples — early results nudge the estimates, they don't
+override them.
 
-Set `fetch_enabled = FALSE` or pass `--no-fetch` to run fully offline.
+**Step 3 — Tournament simulation**
+The model plays out the entire remaining tournament thousands of times, each
+time drawing random results according to the match probabilities. It counts
+how often each team wins, reaches the final, etc. The percentages you see in
+the report are simply how often each outcome happened across all those runs.
+For knockout matches that go to extra time or penalties, those are modelled
+too.
 
-**Manual result override** — drop a `results_update.csv` (same schema as
-`results.csv`) next to `run.R` before running. It is merged by `match_id` and
-then archived. Use this for penalty-shootout details (`pens_home/away`,
-`decided_by = "penalties"`) that the web feed may not provide.
+**Step 4 — Top scorer forecasts**
+Each player has a historical share of their team's goals. The model multiplies
+their team's expected goals by that share, adjusted for current form and
+availability, and then by how far the team is likely to advance. Players on
+strong teams that go deep in the tournament come out on top.
 
-Ratings are re-derived idempotently from priors + all known results on every
-run (`weight ≈ n/(n+K)`). The PDF report is overwritten but its original
-**creation date** is retained.
+**Step 5 — Picks and report**
+The best bets are ranked by confidence. The PDF shows match predictions (with
+a "Confirmed" or "Projected" label if the fixture isn't officially announced
+yet), progression probabilities, top scorer forecasts, and a short strategy note.
 
 ---
 
-## 5. Methodology
+## 6. What's confirmed vs projected
 
-1. **Strength** — each team starts from an Elo prior (`team_ratings_seed.csv`),
-   adjusted by researched form/injury notes (`team_adjustments.csv`).
-2. **Goal model** — a **Dixon-Coles bivariate Poisson** turns strength into a
-   full scoreline distribution. Each team has an attack and a defense effect that
-   scale with its (research-adjusted) Elo. Hosts (USA/Mexico/Canada) get a home
-   bump. When ≥10 results exist, a **ridge-penalised Poisson fit** refines the
-   effects, shrinking toward the priors.
-3. **Simulation** — a **Monte Carlo** plays the bracket thousands of times.
-   Knockout ties resolve via regulation → extra time (reduced expected goals) →
-   strength-tilted penalty shootout. Aggregating gives each team’s probability of
-   reaching every stage. A pairwise advancement matrix is precomputed so the sim
-   is fast.
-4. **Top scorers** — each team’s expected goals are shared among its players
-   (`goal_share_prior` × researched form × availability) and weighted by how far
-   the team is projected to advance → per-stage and Golden Boot forecasts.
-5. **Recommendations** — picks ranked by probability/expected value, with a
-   short strategy note. Tune the model in `model/config.R` and
-   `historical_params.csv`.
+Not all bracket matchups are finalised before you need to make picks.
+The report is transparent about this:
+
+- **Confirmed** — the matchup is official (locked from published results)
+- **Projected** — the model's best guess at who will be in that slot, based
+  on the group stage probabilities
+
+Projected fixtures are marked with `*` in the report. Once a fixture is
+officially announced, update `knockout_bracket.csv` and re-run to lock it in.
+
+Every `source` column in the data files tracks where each piece of
+information came from (`reported_YYYY-MM-DD` = verified, `projected` = estimated).
 
 ---
 
-## 6. Data provenance & honesty
+## 7. Requirements
 
-This repo ships a **snapshot compiled 2026-06-26** from public reporting. Rows
-carry a `source` column so verified facts are distinguishable from placeholders:
-
-- **Verified** — the 12-group draw, reported group winners, Round-of-32 anchor
-  ties, and Golden Boot tallies (`source = reported_2026-06-26`).
-- **Analyst priors** — team Elo ratings (`team_ratings_seed.csv`).
-- **Projected / illustrative** — not-yet-confirmed bracket slots
-  (`source = projected`) and unplayed scores. `results.csv` ships **empty** by
-  design — populate it with official scores.
-
-See `input_data/researched_info/sources.md`. **Always refresh with official data
-before relying on predictions.**
-
-### Not-yet-finalised R32 ties
-
-The bracket is treated as a fixed **input** you update as ties confirm — the
-knockout sim simulates *results*, not *participants*. To keep this honest while
-the group stage finishes:
-
-- Every R32 tie is tagged **Confirmed** (locked from reported results) or
-  **Projected** (model-estimated participants) in
-  `match_predictions_<stage>.csv` and on the report's match-predictions page
-  (Projected ties are marked `*` with an explanatory footnote).
-- If you blank a tie's `home_team`/`away_team` in `knockout_bracket.csv`, the
-  sim fills it with the **most-likely** team for that slot (`W_x` / `RU_x` /
-  third-place pool) from the group projection, rather than silently dropping the
-  match. Once the real matchup is known, enter it and re-run to lock it in.
-
----
-
-## 7. Refreshing from live sources
-
-The build environment used to author this had no access to football data sites,
-so the snapshot was compiled via web-search summaries. When you run locally with
-internet access, the system is fully CSV-driven, so wiring in a feed is just a
-matter of producing tidy CSVs that match the schemas above and dropping them in
-`input_data/`. Convenient public sources:
-
-- `football-data.co.uk` — historical results CSVs (for richer rating priors)
-- `fixturedownload.com` — WC2026 fixtures CSV/JSON
-- `fifa.com` standings / Golden Boot pages — current results & scorers
-
-No code changes are required; see the header of `model/R/01_load_data.R`.
-
----
-
-## 8. Requirements
-
-- R ≥ 4.0 with base + recommended packages (`stats`, `MASS`, `grDevices`,
-  `graphics` — all bundled with a standard R install). No CRAN downloads needed.
-- Verify with: `Rscript -e 'cat(R.version.string)'`
+- **R version 4.0 or later** with a standard installation. No extra packages
+  needed — everything uses built-in R tools.
+- Check your version: `Rscript -e 'cat(R.version.string)'`
+- Internet access is needed for the web fetch step (fixturedownload.com).
+  Run with `--no-fetch` if you're offline.
