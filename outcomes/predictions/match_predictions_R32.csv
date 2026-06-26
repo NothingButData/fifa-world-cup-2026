@@ -1,17 +1,17 @@
 "match_id","stage","home","away","tie_status","advancer","p_advance","reg_result","p_reg","score","p_score"
-73,"R32","Mexico","Canada","Projected","Mexico",0.544,"Home win",0.416,"1-1",0.105
-74,"R32","Germany","Scotland","Projected","Germany",0.717,"Home win",0.558,"1-1",0.117
-75,"R32","Netherlands","Morocco","Projected","Netherlands",0.625,"Home win",0.468,"1-1",0.128
-76,"R32","Brazil","Japan","Projected","Brazil",0.703,"Home win",0.543,"1-1",0.119
-77,"R32","England","Cape Verde","Projected","England",0.807,"Home win",0.66,"2-0",0.115
-78,"R32","Belgium","Ghana","Projected","Belgium",0.67,"Home win",0.51,"1-1",0.123
-79,"R32","USA","Algeria","Projected","USA",0.657,"Home win",0.513,"1-1",0.113
-80,"R32","Spain","Austria","Projected","Spain",0.791,"Home win",0.641,"2-0",0.112
-81,"R32","Switzerland","DR Congo","Projected","Switzerland",0.631,"Home win",0.473,"1-1",0.127
-82,"R32","Portugal","Saudi Arabia","Projected","Portugal",0.818,"Home win",0.674,"2-0",0.117
-83,"R32","Australia","Egypt","Projected","Egypt",0.518,"Away win",0.377,"1-1",0.132
-84,"R32","Argentina","Uruguay","Projected","Argentina",0.713,"Home win",0.553,"1-1",0.118
-85,"R32","France","Norway","Projected","France",0.74,"Home win",0.583,"1-1",0.113
-86,"R32","Korea Republic","Ecuador","Projected","Ecuador",0.523,"Away win",0.38,"1-1",0.132
-87,"R32","Colombia","Senegal","Projected","Colombia",0.552,"Home win",0.404,"1-1",0.131
-88,"R32","Croatia","Uzbekistan","Projected","Croatia",0.749,"Home win",0.593,"1-1",0.112
+73,"R32","South Africa","Switzerland","Confirmed","Switzerland",0.611,"Away win",0.452,"1-1",0.132
+74,"R32","Germany","Korea Republic","Projected","Germany",0.714,"Home win",0.557,"1-1",0.116
+75,"R32","Netherlands","Morocco","Confirmed","Netherlands",0.631,"Home win",0.478,"1-1",0.122
+76,"R32","Brazil","Japan","Confirmed","Brazil",0.694,"Home win",0.532,"1-1",0.122
+77,"R32","England","Bosnia and Herzegovina","Projected","England",0.775,"Home win",0.623,"2-0",0.107
+78,"R32","Egypt","Scotland","Projected","Egypt",0.602,"Home win",0.447,"1-1",0.133
+79,"R32","USA","Paraguay","Projected","USA",0.764,"Home win",0.63,"2-1",0.097
+80,"R32","Spain","Austria","Projected","Spain",0.791,"Home win",0.638,"2-0",0.116
+81,"R32","Canada","Ecuador","Projected","Canada",0.621,"Home win",0.484,"1-1",0.116
+82,"R32","Colombia","Sweden","Projected","Colombia",0.625,"Home win",0.471,"1-1",0.124
+83,"R32","Australia","Belgium","Projected","Belgium",0.623,"Away win",0.451,"1-1",0.136
+84,"R32","Argentina","Cape Verde","Projected","Argentina",0.859,"Home win",0.725,"2-0",0.129
+85,"R32","France","Senegal","Projected","France",0.766,"Home win",0.614,"1-1",0.107
+86,"R32","Mexico","Cote d'Ivoire","Confirmed","Mexico",0.694,"Home win",0.55,"1-1",0.111
+87,"R32","Portugal","Norway","Projected","Portugal",0.662,"Home win",0.506,"1-1",0.121
+88,"R32","Ghana","DR Congo","Projected","Ghana",0.558,"Home win",0.402,"1-1",0.138

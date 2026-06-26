@@ -91,7 +91,7 @@ state <- compute_ratings(state)
 state <- simulate_groups(state)
 state <- simulate_knockout(state)
 state <- forecast_scorers(state)
-state <- recommend(state)
+state <- recommend(state, stage = stage)
 generate_report(state, stage = stage)
 
 log_msg(sprintf("=== Done. Stage: %s | Sims: %s | Report: outcomes/reports/ ===",

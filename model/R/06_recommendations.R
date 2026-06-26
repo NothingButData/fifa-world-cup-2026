@@ -44,17 +44,19 @@ confirmed_advancer_set <- function(state) {
   unique(confirmed)
 }
 
-recommend <- function(state) {
+recommend <- function(state, stage = NULL) {
   log_msg("Building recommendations ...")
   br <- state$bracket
   prog <- state$progression
   conf_set <- confirmed_advancer_set(state)
 
   # ---- Next-stage match predictions (known matchups) ----------------------
-  # The stage whose ties are upcoming is the current stage itself; fall back to
-  # R32 if the state file names something not in our stage list.
-  cur_stage  <- state$tournament_current_stage
-  next_stage <- if (cur_stage %in% state$cfg$stages) cur_stage else "R32"
+  # Which stage's ties to forecast. Honour an explicitly requested stage (e.g.
+  # `Rscript run.R R32`, so the report being produced and the predictions feeding
+  # it always agree); otherwise use the auto-detected current stage. Fall back to
+  # R32 if neither names a stage we recognise.
+  req_stage  <- if (!is.null(stage)) stage else state$tournament_current_stage
+  next_stage <- if (req_stage %in% state$cfg$stages) req_stage else "R32"
   ms <- br[br$stage == next_stage & !is.na(br$home_team) & br$home_team != "", ]
   preds <- NULL
   if (nrow(ms) > 0) {

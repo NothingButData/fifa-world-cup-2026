@@ -26,8 +26,10 @@ CFG <- list(
   # ---- Web-fetch settings (edit these to point at your preferred source) ----
   fetch_enabled      = TRUE,
   # fixturedownload.com provides a clean CSV for WC2026 fixtures + results.
+  # NB: use the direct CSV path (…-UTC.csv). The /download/csv/… path is an
+  # HTML landing page, which silently parses to zero rows.
   # Set to "" or fetch_enabled=FALSE to run fully offline.
-  fetch_url_results  = "https://fixturedownload.com/download/csv/fifa-world-cup-2026",
+  fetch_url_results  = "https://fixturedownload.com/download/fifa-world-cup-2026-UTC.csv",
   fetch_timeout      = 30L,   # seconds before giving up on the download
 
   # Stage order used throughout the system.

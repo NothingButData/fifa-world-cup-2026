@@ -66,6 +66,7 @@ canon_team <- function(x) {
     "Cape Verde" = "Cape Verde", "Cabo Verde" = "Cape Verde",
     "Cote d'Ivoire" = "Cote d'Ivoire", "Ivory Coast" = "Cote d'Ivoire",
     "Cote d’Ivoire" = "Cote d'Ivoire",
+    "Côte d'Ivoire" = "Cote d'Ivoire", "Côte d’Ivoire" = "Cote d'Ivoire",
     "Curacao" = "Curacao", "Curaçao" = "Curacao",
     "Bosnia and Herzegovina" = "Bosnia and Herzegovina", "Bosnia" = "Bosnia and Herzegovina",
     "DR Congo" = "DR Congo", "Congo DR" = "DR Congo",
