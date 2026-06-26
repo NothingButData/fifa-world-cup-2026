@@ -10,10 +10,45 @@
 # value; tune `points` weights below to match your pool's rules.
 # =============================================================================
 
+# Teams whose group placement is mathematically LOCKED by played results.
+# A knockout matchup is only "Confirmed" when both its participants come from
+# here -- never from a hand-edited `source` string, which can be stale or wrong.
+#   * 1st / 2nd of a group are locked once that group is fully played (6/6).
+#   * 3rd-place qualifiers are only locked once EVERY group is complete (the
+#     8-best-thirds pool can't be ranked until then).
+confirmed_advancer_set <- function(state) {
+  res <- state$results; groups <- state$groups
+  if (is.null(res) || nrow(res) == 0 || is.null(groups)) return(character(0))
+  fin <- res[which(res$status == "final" & res$stage == "group"), , drop = FALSE]
+  fin <- fin[!is.na(fin$home_goals) & !is.na(fin$away_goals), , drop = FALSE]
+  if (nrow(fin) == 0) return(character(0))
+
+  teams_by_group <- split(groups$team, groups$group)
+  played_per_grp <- vapply(names(teams_by_group),
+                           function(g) sum(fin$group == g), integer(1))
+  complete <- names(teams_by_group)[played_per_grp >= 6]   # 4 teams -> 6 matches
+  if (length(complete) == 0) return(character(0))
+
+  st <- compute_standings(
+    data.frame(group = fin$group, home_team = fin$home_team, away_team = fin$away_team,
+               home_goals = fin$home_goals, away_goals = fin$away_goals,
+               stringsAsFactors = FALSE),
+    teams_by_group[complete], state$strength)
+
+  confirmed <- st$team[st$pos %in% c(1L, 2L)]               # group winners + runners-up
+  if (length(complete) == length(teams_by_group)) {         # all groups done -> thirds lock
+    thirds <- st[st$pos == 3L, , drop = FALSE]
+    ord3   <- thirds[order(-thirds$pts, -thirds$gd, -thirds$gf), ]
+    confirmed <- c(confirmed, utils::head(ord3$team, 8))
+  }
+  unique(confirmed)
+}
+
 recommend <- function(state) {
   log_msg("Building recommendations ...")
   br <- state$bracket
   prog <- state$progression
+  conf_set <- confirmed_advancer_set(state)
 
   # ---- Next-stage match predictions (known matchups) ----------------------
   next_stage <- state$cfg$stages[match(state$tournament_current_stage, state$cfg$stages)]
@@ -26,9 +61,10 @@ recommend <- function(state) {
       p <- match_probs(state, h, a)
       adv_h <- knockout_win_prob(state, h, a)
       res <- c("Home win", "Draw", "Away win")[which.max(c(p$p_home, p$p_draw, p$p_away))]
-      src <- if ("source" %in% names(ms)) ms$source[i] else NA_character_
-      filled_here <- (!is.null(state$r32_filled)) && (h %in% state$r32_filled || a %in% state$r32_filled)
-      tie_status <- if (!is.na(src) && grepl("^reported", src) && !filled_here) "Confirmed" else "Projected"
+      # Confirmed only when BOTH participants are locked by played group results.
+      # The `source` column is provenance metadata, not proof -- a hand-edited
+      # "reported_*" tag on an unplayed group must not show as Confirmed.
+      tie_status <- if (h %in% conf_set && a %in% conf_set) "Confirmed" else "Projected"
       data.frame(
         match_id = ms$match_id[i], stage = next_stage,
         home = h, away = a,
