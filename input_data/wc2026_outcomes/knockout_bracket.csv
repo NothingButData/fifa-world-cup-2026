@@ -1,0 +1,33 @@
+match_id,stage,date,venue,home_slot,away_slot,home_team,away_team,source
+73,R32,2026-06-28,Los Angeles,RU_A,W_B,South Africa,Canada,reported_2026-06-26
+74,R32,2026-06-29,Mexico City,W_E,3RD_pool,Germany,Senegal,projected
+75,R32,2026-06-30,Boston,W_F,RU_C,Netherlands,Morocco,reported_2026-06-26
+76,R32,2026-06-29,Houston,W_C,RU_F,Brazil,Japan,reported_2026-06-26
+77,R32,2026-07-01,Atlanta,W_L,3RD_pool,England,Cape Verde,reported_2026-06-26
+78,R32,2026-07-01,Seattle,W_G,3RD_pool,Egypt,Czechia,reported_2026-06-26
+79,R32,2026-07-01,Santa Clara,W_D,3RD_pool,USA,Bosnia and Herzegovina,reported_2026-06-26
+80,R32,2026-07-02,Los Angeles,W_H,RU_J,Spain,Austria,reported_2026-06-26
+81,R32,2026-07-02,Vancouver,W_B,3RD_pool,Switzerland,Belgium,reported_2026-06-26
+82,R32,2026-07-02,Toronto,W_K,3RD_pool,Portugal,Ghana,reported_2026-06-26
+83,R32,2026-07-03,Arlington,RU_D,RU_G,Australia,Iran,reported_2026-06-26
+84,R32,2026-07-03,Miami Gardens,W_J,RU_H,Argentina,Uruguay,reported_2026-06-26
+85,R32,2026-06-30,Philadelphia,W_I,3RD_pool,France,Sweden,projected
+86,R32,2026-06-28,Guadalajara,W_A,RU_E,Mexico,Ecuador,projected
+87,R32,2026-07-01,Kansas City,W_K2,RU_I,Colombia,Norway,projected
+88,R32,2026-07-02,Monterrey,RU_L,3RD_pool,Croatia,Korea Republic,projected
+89,R16,2026-07-04,Los Angeles,W73,W74,,,bracket_tree
+90,R16,2026-07-05,Houston,W75,W76,,,bracket_tree
+91,R16,2026-07-06,Atlanta,W77,W78,,,bracket_tree
+92,R16,2026-07-04,Santa Clara,W79,W80,,,bracket_tree
+93,R16,2026-07-05,Vancouver,W81,W82,,,bracket_tree
+94,R16,2026-07-06,Arlington,W83,W84,,,bracket_tree
+95,R16,2026-07-07,Philadelphia,W85,W86,,,bracket_tree
+96,R16,2026-07-07,Kansas City,W87,W88,,,bracket_tree
+97,QF,2026-07-09,Los Angeles,W89,W90,,,bracket_tree
+98,QF,2026-07-10,Atlanta,W91,W92,,,bracket_tree
+99,QF,2026-07-11,Vancouver,W93,W94,,,bracket_tree
+100,QF,2026-07-11,Kansas City,W95,W96,,,bracket_tree
+101,SF,2026-07-14,Dallas,W97,W98,,,bracket_tree
+102,SF,2026-07-15,Atlanta,W99,W100,,,bracket_tree
+103,third_place,2026-07-18,Miami Gardens,L101,L102,,,bracket_tree
+104,final,2026-07-19,East Rutherford,W101,W102,,,bracket_tree

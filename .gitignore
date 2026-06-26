@@ -1,0 +1,12 @@
+# R session artifacts
+.Rhistory
+.RData
+.Rproj.user/
+*.Rproj
+
+# Archived incremental-update staging files (regenerated during the tournament)
+input_data/wc2026_outcomes/results_update_applied_*.csv
+
+# OS / editor cruft
+.DS_Store
+*~

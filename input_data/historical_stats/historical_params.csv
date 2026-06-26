@@ -1,0 +1,13 @@
+param,value,description
+base_goals_per_team,1.35,Long-run average goals scored per team per international match
+home_advantage_loggoals,0.22,Additive log-goal boost for a host/home team (multiplies expected goals ~1.25x)
+neutral_venue,1,Most WC2026 matches are effectively neutral except host nations at home
+elo_to_loggoals_scale,0.0015,"Converts centered-Elo strength into each team's attack & defense log-goal effect; a 200-Elo edge => ~0.8 goal supremacy on neutral ground"
+dixon_coles_rho,-0.08,"Low-score correlation correction (Dixon-Coles); negative deflates 1-1/0-0 vs independent Poisson"
+shrinkage_k,4.0,"Pseudo-game weight K; empirical ratings blend toward prior with weight n/(n+K)"
+penalty_lambda,6.0,Ridge penalty strength pulling fitted attack/defense toward Elo-derived priors
+max_goals_grid,8,Maximum goals per team used when building the discrete scoreline distribution
+knockout_draw_to_pens,1,If a knockout match is level after 90+ET it is decided by penalties (coin-flip weighted by strength)
+extra_time_goal_fraction,0.33,Expected-goals multiplier applied to a 30-min extra-time period relative to 90 min
+penalty_strength_tilt,0.15,"How much team strength tilts a penalty shootout from 50/50 (0=coin flip, 1=deterministic)"
+host_teams,USA;Mexico;Canada,Teams that receive home advantage when playing in their own country

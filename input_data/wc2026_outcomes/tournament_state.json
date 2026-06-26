@@ -1,0 +1,12 @@
+{
+  "tournament": "FIFA World Cup 2026",
+  "hosts": ["United States", "Mexico", "Canada"],
+  "format": "48 teams, 12 groups of 4, top 2 + 8 best thirds advance to Round of 32",
+  "as_of_date": "2026-06-26",
+  "current_stage": "R32",
+  "completed_stages": ["group"],
+  "upcoming_stages": ["R32", "R16", "QF", "SF", "third_place", "final"],
+  "final": {"date": "2026-07-19", "venue": "MetLife Stadium, East Rutherford, NJ"},
+  "notes": "Group stage concludes 2026-06-27. Knockout (Round of 32) begins 2026-06-28. Group results in results.csv are an illustrative seed snapshot and should be refreshed with official scores; reported facts (group winners, R32 anchor ties, top scorers) are flagged source=reported_2026-06-26.",
+  "last_updated": "2026-06-26"
+}
