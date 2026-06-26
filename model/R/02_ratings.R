@@ -45,6 +45,22 @@ compute_ratings <- function(state) {
   n <- length(teams)
   att <- stats::setNames(rt$att_prior, teams)
   def <- stats::setNames(rt$def_prior, teams)
+
+  # Apply form_multiplier: log-additive on both attack and defense effects.
+  # fm > 1 -> more attack AND tighter defense (in-form); fm < 1 -> the reverse.
+  # Also updates the ridge penalty targets so the Poisson fit shrinks toward
+  # the form-adjusted priors, not the raw Elo priors.
+  if (!is.null(adj) && "form_multiplier" %in% names(adj) && nrow(adj) > 0) {
+    m2  <- match(teams, adj$team)
+    fm  <- ifelse(!is.na(m2), suppressWarnings(as.numeric(adj$form_multiplier[m2])), 1.0)
+    fm[is.na(fm) | fm <= 0] <- 1.0
+    lf  <- stats::setNames(log(fm), teams)
+    att <- att + lf
+    def <- def + lf
+    rt$att_prior <- unname(att)   # ridge target = form-adjusted prior
+    rt$def_prior <- unname(def)
+  }
+
   globals <- list(c = c0, home = home0, rho = as.numeric(p$dixon_coles_rho), hosts = hosts)
 
   # --- 4: penalised Poisson refinement from results --------------------------
