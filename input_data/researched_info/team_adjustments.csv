@@ -1,6 +1,6 @@
-team,elo_adjustment,form_multiplier,reason,source,date
-Egypt,35,1.05,CAF calibration: Salah-led side; AFCON 2021 finalist 2024 runner-up; CAF teams historically outperform Elo at WC by ~30-40pts,confederation_calibration,2026-06-26
-South Africa,25,1.02,CAF calibration: athletic squad; AFCON 2024 bronze; young group systematically underrated by Elo,confederation_calibration,2026-06-26
-Australia,25,1.04,AFC calibration: consistently outperforms FIFA/Elo at WC (2022 R16); physical and well-organised; Postecoglou-era upgrades,confederation_calibration,2026-06-26
-Cape Verde,30,1.03,CAF calibration: debutants but AFCON 2023 QF; compact and hard to score against; small-nation Elo systematically underestimates tournament readiness,confederation_calibration,2026-06-26
-Ghana,20,1.02,CAF calibration: experienced WC squad (2022 participant); young attacking talent underrated relative to recent continental form,confederation_calibration,2026-06-26
+team,elo_adjustment,form_multiplier,attack_adjustment,defense_adjustment,reason,source,date
+Egypt,35,1.05,0,0,CAF calibration: Salah-led side; AFCON 2021 finalist 2024 runner-up; CAF teams historically outperform Elo at WC by ~30-40pts,confederation_calibration,2026-06-26
+South Africa,25,1.02,0,0,CAF calibration: athletic squad; AFCON 2024 bronze; young group systematically underrated by Elo,confederation_calibration,2026-06-26
+Australia,25,1.04,0,0,AFC calibration: consistently outperforms FIFA/Elo at WC (2022 R16); physical and well-organised; Postecoglou-era upgrades,confederation_calibration,2026-06-26
+Cape Verde,30,1.03,0,0,CAF calibration: debutants but AFCON 2023 QF; compact and hard to score against; small-nation Elo systematically underestimates tournament readiness,confederation_calibration,2026-06-26
+Ghana,20,1.02,0,0,CAF calibration: experienced WC squad (2022 participant); young attacking talent underrated relative to recent continental form,confederation_calibration,2026-06-26

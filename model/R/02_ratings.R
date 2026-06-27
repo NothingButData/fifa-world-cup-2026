@@ -3,7 +3,8 @@
 # =============================================================================
 # Pipeline:
 #   1. Start from Elo priors (team_ratings_seed.csv).
-#   2. Apply researched team adjustments (elo_adjustment from research).
+#   2. Apply researched team adjustments (symmetric elo_adjustment + form, then
+#      asymmetric attack_adjustment / defense_adjustment for lopsided sides).
 #   3. Derive prior attack/defense effects (both scale with centered Elo).
 #   4. If enough match results exist, refine attack/defense with a
 #      ridge-penalised Poisson fit that SHRINKS toward the priors -- so early
@@ -58,6 +59,26 @@ compute_ratings <- function(state) {
     att <- att + lf
     def <- def + lf
     rt$att_prior <- unname(att)   # ridge target = form-adjusted prior
+    rt$def_prior <- unname(def)
+  }
+
+  # Asymmetric attack/defense research adjustments (Elo-equivalent points). The
+  # symmetric elo_adjustment and form_multiplier move attack AND defense together,
+  # so neither can express "great going forward, shaky at the back" (or a strong
+  # GK/back line on a low-ceiling side). These columns add an asymmetric term on
+  # top: +attack_adjustment => scores more; +defense_adjustment => concedes fewer
+  # (better defence/keeper). Scaled by elo_to_loggoals_scale like elo_adjustment,
+  # and folded into the ridge targets so the Poisson fit shrinks toward them.
+  if (!is.null(adj) && nrow(adj) > 0) {
+    m3   <- match(teams, adj$team)
+    aadj <- if ("attack_adjustment"  %in% names(adj))
+              ifelse(!is.na(m3), suppressWarnings(as.numeric(adj$attack_adjustment[m3])),  0) else 0
+    dadj <- if ("defense_adjustment" %in% names(adj))
+              ifelse(!is.na(m3), suppressWarnings(as.numeric(adj$defense_adjustment[m3])), 0) else 0
+    aadj[is.na(aadj)] <- 0; dadj[is.na(dadj)] <- 0
+    att <- att + scale * aadj
+    def <- def + scale * dadj
+    rt$att_prior <- unname(att)
     rt$def_prior <- unname(def)
   }
 
