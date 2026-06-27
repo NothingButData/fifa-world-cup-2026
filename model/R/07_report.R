@@ -119,6 +119,9 @@ generate_report <- function(state, stage = NULL) {
   st_long <- do.call(rbind, lapply(names(state$stage_top_scorers), function(s) {
     d <- state$stage_top_scorers[[s]]; if (nrow(d)) cbind(stage = s, d) else NULL }))
   if (!is.null(st_long)) write_csv_safe(st_long, file.path(cfg$dir_predictions, "stage_top_scorers.csv"))
+  if (!is.null(state$scorito_scorers))
+    write_csv_safe(state$scorito_scorers,
+                   file.path(cfg$dir_predictions, "scorito_topscorers.csv"))
 
   # ---- open PDF -------------------------------------------------------------
   pdf_path <- file.path(cfg$dir_reports, paste0("WC2026_", stage, "_report.pdf"))
@@ -178,9 +181,10 @@ generate_report <- function(state, stage = NULL) {
   # ---- Page 3: next-stage match predictions --------------------------------
   mp <- state$recommendations$match_predictions
   .page(); .header(paste0(label, " - Match Predictions"),
-                   "Advancer = win the tie; 90' result and likeliest score also shown")
+                   "Advancer = win the tie; Score = EV-optimal Scorito pick (max expected points)")
   if (!is.null(mp) && nrow(mp) > 0) {
     tie <- if ("tie_status" %in% names(mp)) mp$tie_status else rep("", nrow(mp))
+    evp <- if ("ev_points" %in% names(mp)) format(round(mp$ev_points)) else rep("", nrow(mp))
     mtab <- data.frame(
       Match = paste0(paste(mp$home, "v", mp$away),
                      ifelse(tie == "Projected", " *", "")),
@@ -188,9 +192,10 @@ generate_report <- function(state, stage = NULL) {
       Advance = paste0(mp$advancer, " (", pct(mp$p_advance, 0), ")"),
       `90'` = mp$reg_result,
       Score = paste0(mp$score, " (", pct(mp$p_score, 0), ")"),
+      `E[pts]` = evp,
       check.names = FALSE, stringsAsFactors = FALSE)
-    endy <- .table(mtab, y_top = 0.9, widths = c(0.36, 0.14, 0.22, 0.15, 0.13),
-                   aligns = c("l", "l", "l", "l", "l"), cex = 0.71)
+    endy <- .table(mtab, y_top = 0.9, widths = c(0.30, 0.12, 0.20, 0.13, 0.13, 0.12),
+                   aligns = c("l", "l", "l", "l", "l", "r"), cex = 0.71)
     nproj <- sum(tie == "Projected")
     if (nproj > 0)
       .wrap_text(paste0("* ", nproj, " tie(s) marked Projected use model-estimated ",
@@ -211,20 +216,21 @@ generate_report <- function(state, stage = NULL) {
   gtab <- data.frame(
     Player = gbt$player, Team = gbt$team, Now = gbt$current,
     `Exp+` = gbt$exp_remaining, Proj = gbt$proj_total,
+    Scorito = gbt$scorito_points,
     check.names = FALSE, stringsAsFactors = FALSE)
-  endy <- .table(gtab, y_top = 0.9, widths = c(0.34, 0.28, 0.10, 0.13, 0.15),
-                 aligns = c("l", "l", "r", "r", "r"), cex = 0.74,
-                 title = "Golden Boot projection")
-  # next-stage top scorer picks
+  endy <- .table(gtab, y_top = 0.9, widths = c(0.30, 0.24, 0.09, 0.11, 0.12, 0.14),
+                 aligns = c("l", "l", "r", "r", "r", "r"), cex = 0.74,
+                 title = "Golden Boot projection (Proj = goals; Scorito = expected game points)")
+  # Scorito-optimal top-scorer picks for the next round (per-goal x position x stage).
   ns <- state$recommendations$next_stage
-  sd <- state$stage_top_scorers[[ns]]
+  sd <- state$stage_scorito_scorers[[ns]]
   if (!is.null(sd) && nrow(sd) > 0) {
-    stab <- data.frame(Player = sd$player, Team = sd$team,
-                       `Exp goals` = sd$exp_goals, check.names = FALSE,
+    stab <- data.frame(Player = sd$player, Team = sd$team, Pos = sd$position,
+                       `E[pts]` = sd$exp_points, check.names = FALSE,
                        stringsAsFactors = FALSE)
-    .table(utils::head(stab, 8), y_top = endy - 0.03, widths = c(0.45, 0.4, 0.15),
-           aligns = c("l", "l", "r"), cex = 0.74,
-           title = paste0("Top-scorer picks for ", label))
+    .table(utils::head(stab, 8), y_top = endy - 0.03, widths = c(0.42, 0.33, 0.10, 0.15),
+           aligns = c("l", "l", "l", "r"), cex = 0.74,
+           title = paste0("Scorito top-scorer picks for ", label, " (position & stage weighted)"))
   }
   .footer(run_date, created)
 

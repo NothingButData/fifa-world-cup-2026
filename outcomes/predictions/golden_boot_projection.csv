@@ -1,66 +1,66 @@
-"player","team","position","current","exp_remaining","proj_total"
-"Lionel Messi","Argentina","FW",5,2.28,7.28
-"Kylian Mbappe","France","FW",4,2.33,6.33
-"Vinicius Junior","Brazil","FW",4,1.52,5.52
-"Cristiano Ronaldo","Portugal","FW",3,1.91,4.91
-"Erling Haaland","Norway","FW",4,0.89,4.89
-"Deniz Undav","Germany","FW",3,1.22,4.22
-"Jonathan David","Canada","FW",3,1.14,4.14
-"Harry Kane","England","FW",2,2,4
-"Julian Alvarez","Argentina","FW",2,1.34,3.34
-"Alvaro Morata","Spain","FW",2,1.31,3.31
-"Romelu Lukaku","Belgium","FW",2,1.23,3.23
-"Lamine Yamal","Spain","FW",2,1.19,3.19
-"Santiago Gimenez","Mexico","FW",2,1.02,3.02
-"Mohamed Salah","Egypt","FW",2,1.01,3.01
-"Christian Pulisic","USA","FW",2,1,3
-"Memphis Depay","Netherlands","FW",2,0.97,2.97
-"Raphinha","Brazil","FW",2,0.97,2.97
-"Jamal Musiala","Germany","MF",2,0.93,2.93
-"Luis Diaz","Colombia","FW",2,0.89,2.89
-"Son Heung-min","Korea Republic","FW",2,0.78,2.78
-"Sadio Mane","Senegal","FW",2,0.78,2.78
-"Cody Gakpo","Netherlands","FW",2,0.76,2.76
-"Youssef En-Nesyri","Morocco","FW",2,0.58,2.58
-"Darwin Nunez","Uruguay","FW",2,0.57,2.57
-"Lautaro Martinez","Argentina","FW",1,1.23,2.23
-"Ousmane Dembele","France","FW",1,1.06,2.06
-"Andrej Kramaric","Croatia","FW",1,1.02,2.02
-"Alexander Isak","Sweden","FW",2,0,2
-"Bruno Fernandes","Portugal","MF",1,0.96,1.96
-"Rafael Leao","Portugal","FW",1,0.96,1.96
-"Mikel Oyarzabal","Spain","FW",1,0.95,1.95
-"Nico Williams","Spain","FW",1,0.95,1.95
-"Marcus Thuram","France","FW",1,0.94,1.94
-"Bukayo Saka","England","FW",1,0.9,1.9
-"Rodrygo","Brazil","FW",1,0.88,1.88
-"Folarin Balogun","USA","FW",1,0.87,1.87
-"Cole Palmer","England","FW",1,0.8,1.8
-"Kai Havertz","Germany","FW",1,0.76,1.76
-"Raul Jimenez","Mexico","FW",1,0.76,1.76
-"Phil Foden","England","FW",1,0.75,1.75
-"Florian Wirtz","Germany","MF",1,0.68,1.68
-"Ricardo Pepi","USA","FW",1,0.67,1.67
-"James Rodriguez","Colombia","MF",1,0.65,1.65
-"Kevin De Bruyne","Belgium","MF",1,0.61,1.61
-"Jhon Duran","Colombia","FW",1,0.59,1.59
-"Xavi Simons","Netherlands","MF",1,0.56,1.56
-"Nicolas Jackson","Senegal","FW",1,0.55,1.55
-"Jeremy Doku","Belgium","FW",1,0.55,1.55
-"Riyad Mahrez","Algeria","FW",1,0.51,1.51
-"Mohammed Kudus","Ghana","FW",1,0.47,1.47
-"Alphonso Davies","Canada","DF",1,0.44,1.44
-"Federico Valverde","Uruguay","MF",1,0.42,1.42
-"Hwang Hee-chan","Korea Republic","FW",1,0.41,1.41
-"Hakim Ziyech","Morocco","MF",1,0.39,1.39
-"Takefusa Kubo","Japan","FW",1,0.38,1.38
-"Marko Arnautovic","Austria","FW",1,0.38,1.38
-"Kaoru Mitoma","Japan","FW",1,0.35,1.35
-"Ayase Ueda","Japan","FW",1,0.35,1.35
-"Brahim Diaz","Morocco","MF",1,0.35,1.35
-"Alexander Sorloth","Norway","FW",1,0.3,1.3
-"Viktor Gyokeres","Sweden","FW",1,0,1
-"Mehdi Taremi","Iran","FW",1,0,1
-"Sardar Azmoun","Iran","FW",1,0,1
-"Luka Modric","Croatia","MF",0,0.63,0.63
-"Facundo Pellistri","Uruguay","FW",0,0.26,0.26
+"player","team","position","current","exp_remaining","proj_total","scorito_points"
+"Lionel Messi","Argentina","FW",5,2.27,7.27,61.8
+"Kylian Mbappe","France","FW",4,2.3,6.3,62.3
+"Vinicius Junior","Brazil","FW",4,1.52,5.52,38.5
+"Erling Haaland","Norway","FW",4,0.91,4.91,20
+"Cristiano Ronaldo","Portugal","FW",3,1.89,4.89,47
+"Deniz Undav","Germany","FW",3,1.2,4.2,29
+"Jonathan David","Canada","FW",3,1.11,4.11,23.4
+"Harry Kane","England","FW",2,2.01,4.01,49.8
+"Julian Alvarez","Argentina","FW",2,1.34,3.34,36.3
+"Alvaro Morata","Spain","FW",2,1.32,3.32,35.2
+"Romelu Lukaku","Belgium","FW",2,1.2,3.2,27.5
+"Lamine Yamal","Spain","FW",2,1.2,3.2,32
+"Christian Pulisic","USA","FW",2,1.06,3.06,23.2
+"Santiago Gimenez","Mexico","FW",2,1.03,3.03,22.7
+"Mohamed Salah","Egypt","FW",2,1,3,20.6
+"Memphis Depay","Netherlands","FW",2,0.98,2.98,23.7
+"Raphinha","Brazil","FW",2,0.97,2.97,24.6
+"Jamal Musiala","Germany","MF",2,0.93,2.93,44.6
+"Luis Diaz","Colombia","FW",2,0.87,2.87,19.8
+"Sadio Mane","Senegal","FW",2,0.78,2.78,17
+"Son Heung-min","Korea Republic","FW",2,0.78,2.78,15.8
+"Cody Gakpo","Netherlands","FW",2,0.77,2.77,18.6
+"Youssef En-Nesyri","Morocco","FW",2,0.59,2.59,12.7
+"Darwin Nunez","Uruguay","FW",2,0.56,2.56,12.8
+"Lautaro Martinez","Argentina","FW",1,1.23,2.23,33.3
+"Ousmane Dembele","France","FW",1,1.04,2.04,28.3
+"Alexander Isak","Sweden","FW",2,0,2,0
+"Mikel Oyarzabal","Spain","FW",1,0.96,1.96,25.6
+"Nico Williams","Spain","FW",1,0.96,1.96,25.6
+"Bruno Fernandes","Portugal","MF",1,0.95,1.95,47.4
+"Rafael Leao","Portugal","FW",1,0.95,1.95,23.7
+"Marcus Thuram","France","FW",1,0.93,1.93,25.2
+"Folarin Balogun","USA","FW",1,0.92,1.92,20.1
+"Bukayo Saka","England","FW",1,0.91,1.91,22.4
+"Andrej Kramaric","Croatia","FW",1,0.9,1.9,21
+"Rodrygo","Brazil","FW",1,0.88,1.88,22.3
+"Cole Palmer","England","FW",1,0.81,1.81,19.9
+"Raul Jimenez","Mexico","FW",1,0.77,1.77,17
+"Kai Havertz","Germany","FW",1,0.76,1.76,18.2
+"Phil Foden","England","FW",1,0.76,1.76,18.7
+"Ricardo Pepi","USA","FW",1,0.71,1.71,15.5
+"Florian Wirtz","Germany","MF",1,0.67,1.67,32.4
+"James Rodriguez","Colombia","MF",1,0.64,1.64,29
+"Kevin De Bruyne","Belgium","MF",1,0.6,1.6,27.5
+"Jhon Duran","Colombia","FW",1,0.58,1.58,13.2
+"Xavi Simons","Netherlands","MF",1,0.56,1.56,27.1
+"Riyad Mahrez","Algeria","FW",1,0.56,1.56,11.2
+"Nicolas Jackson","Senegal","FW",1,0.55,1.55,12
+"Jeremy Doku","Belgium","FW",1,0.54,1.54,12.2
+"Mohammed Kudus","Ghana","FW",1,0.48,1.48,9.5
+"Alphonso Davies","Canada","DF",1,0.42,1.42,35.7
+"Federico Valverde","Uruguay","MF",1,0.41,1.41,18.7
+"Hwang Hee-chan","Korea Republic","FW",1,0.41,1.41,8.3
+"Hakim Ziyech","Morocco","MF",1,0.39,1.39,17
+"Takefusa Kubo","Japan","FW",1,0.39,1.39,8.1
+"Marko Arnautovic","Austria","FW",1,0.38,1.38,7.7
+"Kaoru Mitoma","Japan","FW",1,0.36,1.36,7.5
+"Ayase Ueda","Japan","FW",1,0.36,1.36,7.5
+"Brahim Diaz","Morocco","MF",1,0.35,1.35,15.3
+"Alexander Sorloth","Norway","FW",1,0.31,1.31,6.8
+"Viktor Gyokeres","Sweden","FW",1,0,1,0
+"Mehdi Taremi","Iran","FW",1,0,1,0
+"Sardar Azmoun","Iran","FW",1,0,1,0
+"Luka Modric","Croatia","MF",0,0.56,0.56,25.8
+"Facundo Pellistri","Uruguay","FW",0,0.26,0.26,6

@@ -42,6 +42,32 @@ CFG <- list(
     SF          = "Semi-finals",
     third_place = "Third-place Play-off",
     final       = "Final"
+  ),
+
+  # ---- Scorito scoring (WK 2026) -------------------------------------------
+  # The point values the picks are optimised against. Turning probabilities into
+  # EV-optimal selections requires the *scoring*, not just the most-likely
+  # outcome. Sources: Scorito's published rules (blog.scorito.com) cross-checked
+  # against pouletips.nl / squawka.
+  #   CONFIRMED: match exact/toto per round, 25 pts/correct group position,
+  #              250-pt champion bonus, and the group & final top-scorer values.
+  #   ASSUMED (re-verify before locking picks): the per-goal top-scorer "base"
+  #              for R32/R16/QF/SF is interpolated proportionally (group 8 ->
+  #              final 48), and the third_place row mirrors SF.
+  # A goal is worth base[stage] * pos_mult[position]; a defender/keeper goal is
+  # therefore 4x an attacker's.
+  scorito = list(
+    # Match prediction: exact score vs correct toto (winner/draw), by stage.
+    match_exact = c(group = 45, R32 = 90, R16 = 135, QF = 180, SF = 225,
+                    third_place = 225, final = 270),
+    match_toto  = c(group = 30, R32 = 60, R16 =  90, QF = 120, SF = 150,
+                    third_place = 150, final = 180),
+    standings_per_position = 25,   # max 100 / group (4 positions)
+    champion_bonus         = 250,
+    # Per-goal top-scorer points = base[stage] * pos_mult[position].
+    topscorer_base     = c(group = 8, R32 = 16, R16 = 24, QF = 32, SF = 40,
+                           third_place = 40, final = 48),
+    topscorer_pos_mult = c(FW = 1, MF = 2, DF = 4, GK = 4)
   )
 )
 
