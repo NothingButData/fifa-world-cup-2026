@@ -72,12 +72,30 @@ forecast_scorers <- function(state) {
   pl$exp_remaining <- rowSums(stage_goals)
   pl$proj_total    <- pl$current + pl$exp_remaining
 
+  # ---- Scorito top-scorer value -------------------------------------------
+  # The game pays per goal, weighted by stage (deeper rounds worth more) and by
+  # position (a defender/keeper goal is 4x an attacker's, a midfielder's 2x). So
+  # the EV-optimal pick maximises sum_stage E[goals] * base[stage] * pos_mult --
+  # NOT raw projected goals. A set-piece defender on a deep team can beat a
+  # forward who goes out early.
+  sc       <- state$cfg$scorito
+  pos_mult <- ifelse(pl$position %in% names(sc$topscorer_pos_mult),
+                     sc$topscorer_pos_mult[pl$position], 1)
+  base_vec <- sc$topscorer_base[colnames(stage_goals)]   # align to stage columns
+  base_vec[is.na(base_vec)] <- 0
+  pl$scorito_points <- as.numeric(stage_goals %*% base_vec) * pos_mult
+
   scorer_projection <- pl[order(-pl$proj_total),
                           c("player", "team", "position", "current",
-                            "exp_remaining", "proj_total")]
-  scorer_projection$exp_remaining <- round(scorer_projection$exp_remaining, 2)
-  scorer_projection$proj_total    <- round(scorer_projection$proj_total, 2)
+                            "exp_remaining", "proj_total", "scorito_points")]
+  scorer_projection$exp_remaining   <- round(scorer_projection$exp_remaining, 2)
+  scorer_projection$proj_total      <- round(scorer_projection$proj_total, 2)
+  scorer_projection$scorito_points  <- round(scorer_projection$scorito_points, 1)
   rownames(scorer_projection) <- NULL
+
+  # Players ranked by Scorito top-scorer value (the order to actually pick in).
+  scorito_scorers <- scorer_projection[order(-scorer_projection$scorito_points), ]
+  rownames(scorito_scorers) <- NULL
 
   # Per-stage top scorers: expected goals scored *in that stage*.
   stage_top <- lapply(remaining_stages, function(s) {
@@ -89,7 +107,21 @@ forecast_scorers <- function(state) {
   })
   names(stage_top) <- remaining_stages
 
-  state$scorer_projection <- scorer_projection
-  state$stage_top_scorers <- stage_top
+  # Per-stage Scorito value (points, not goals) -- the EV ranking for the fresh
+  # picks Scorito asks for each knockout round.
+  stage_scorito <- lapply(remaining_stages, function(s) {
+    b   <- if (s %in% names(sc$topscorer_base)) sc$topscorer_base[[s]] else 0
+    pts <- stage_goals[, s] * b * pos_mult
+    d <- data.frame(player = pl$player, team = pl$team, position = pl$position,
+                    exp_points = round(pts, 1), stringsAsFactors = FALSE)
+    d <- d[order(-d$exp_points), ]
+    head(d[d$exp_points > 0, ], 10)
+  })
+  names(stage_scorito) <- remaining_stages
+
+  state$scorer_projection     <- scorer_projection
+  state$scorito_scorers       <- scorito_scorers
+  state$stage_top_scorers     <- stage_top
+  state$stage_scorito_scorers <- stage_scorito
   state
 }

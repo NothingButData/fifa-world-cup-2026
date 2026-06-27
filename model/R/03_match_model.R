@@ -55,6 +55,27 @@ outcome_from_matrix <- function(M) {
   )
 }
 
+# Expected-value-optimal scoreline under Scorito-style exact/toto scoring.
+# Predicting (i, j) earns `w_exact` if it is exactly right, else `w_toto` if only
+# the result bucket (home win / draw / away win) is right. Expected points are
+#   EV(i, j) = w_toto * P(bucket of (i,j)) + (w_exact - w_toto) * P(score = (i,j))
+# The toto term dominates (big bucket probabilities), so the maximiser is the
+# likeliest score *within the likeliest bucket* -- never a draw when a win is
+# favoured, which is exactly the trap the bare mode falls into. Scans the grid.
+ev_optimal_score <- function(M, w_exact, w_toto) {
+  p_home <- sum(M[lower.tri(M)]); p_draw <- sum(diag(M)); p_away <- sum(M[upper.tri(M)])
+  ng <- nrow(M) - 1L
+  best <- list(home = 0L, away = 0L, ev = -Inf, p_exact = 0, p_bucket = 0)
+  for (i in 0:ng) for (j in 0:ng) {
+    pb <- if (i > j) p_home else if (i == j) p_draw else p_away
+    pe <- M[i + 1L, j + 1L]
+    ev <- w_toto * pb + (w_exact - w_toto) * pe
+    if (ev > best$ev + 1e-12)
+      best <- list(home = i, away = j, ev = ev, p_exact = pe, p_bucket = pb)
+  }
+  best
+}
+
 # Convenience: outcome probabilities directly from team names.
 match_probs <- function(state, home, away) {
   lam <- expected_goals(state, home, away)
@@ -63,6 +84,7 @@ match_probs <- function(state, home, away) {
   o <- outcome_from_matrix(M)
   o$home <- home; o$away <- away
   o$lam_home <- unname(lam["home"]); o$lam_away <- unname(lam["away"])
+  o$M <- M                                   # full scoreline grid for EV picks
   o
 }
 

@@ -124,7 +124,12 @@ Every team starts with a strength score based on their FIFA ranking and recent
 international results (stored in `team_ratings_seed.csv`). You can manually
 boost or reduce any team's score in `team_adjustments.csv` — for example, if a
 key player is injured or a team is on a strong run of form that isn't yet
-reflected in the rankings.
+reflected in the rankings. `elo_adjustment` and `form_multiplier` move a team's
+attack and defence *together*; for lopsided sides (great attack but leaky
+defence, or a low-ceiling team with an elite keeper/back line) use the
+`attack_adjustment` / `defense_adjustment` columns instead — both in
+Elo-equivalent points, where **+attack = scores more** and **+defence = concedes
+fewer**. Leave them at 0 for symmetric teams.
 
 **Step 2 — Match predictions**
 Given two team strength scores, the model works out how many goals each side
