@@ -22,6 +22,14 @@ compute_standings <- function(matches, teams_by_group, strength = NULL) {
       h <- mg$home_team[i]; a <- mg$away_team[i]
       hg <- mg$home_goals[i]; ag <- mg$away_goals[i]
       if (is.na(hg) || is.na(ag)) next
+      # Guard: a result naming a team outside this group's roster (e.g. an
+      # un-canonicalised spelling) would otherwise APPEND a phantom element to
+      # the named pts/gf/ga vectors, desync their length from `tie`, and crash
+      # order() below. Skip such rows and warn rather than take down the run.
+      if (!(h %in% tm) || !(a %in% tm)) {
+        log_msg(sprintf("  [standings] WARN: skipping %s vs %s in group %s — team not in roster (canon_team?)", h, a, gr))
+        next
+      }
       pl[h] <- pl[h] + 1; pl[a] <- pl[a] + 1
       gf[h] <- gf[h] + hg; ga[h] <- ga[h] + ag
       gf[a] <- gf[a] + ag; ga[a] <- ga[a] + hg
