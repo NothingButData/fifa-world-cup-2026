@@ -1,6 +1,11 @@
 team,elo_adjustment,form_multiplier,attack_adjustment,defense_adjustment,reason,source,date
-Egypt,35,1.05,0,0,CAF calibration: Salah-led side; AFCON 2021 finalist 2024 runner-up; CAF teams historically outperform Elo at WC by ~30-40pts,confederation_calibration,2026-06-26
-South Africa,25,1.02,0,0,CAF calibration: athletic squad; AFCON 2024 bronze; young group systematically underrated by Elo,confederation_calibration,2026-06-26
-Australia,25,1.04,0,0,AFC calibration: consistently outperforms FIFA/Elo at WC (2022 R16); physical and well-organised; Postecoglou-era upgrades,confederation_calibration,2026-06-26
-Cape Verde,30,1.03,0,0,CAF calibration: debutants but AFCON 2023 QF; compact and hard to score against; small-nation Elo systematically underestimates tournament readiness,confederation_calibration,2026-06-26
-Ghana,20,1.02,0,0,CAF calibration: experienced WC squad (2022 participant); young attacking talent underrated relative to recent continental form,confederation_calibration,2026-06-26
+Egypt,20,1.03,0,0,CAF calibration tempered post-group: reached R32 as Group G runner-up (5 pts; unbeaten); Salah-led; prior boost reduced now that group results inform ratings,confederation_calibration,2026-06-28
+South Africa,18,1.02,0,0,CAF calibration tempered: advanced 2nd in Group A beating Korea Republic; athletic young side; reduced as group results now in model,confederation_calibration,2026-06-28
+Australia,18,1.03,0,0,AFC calibration tempered: advanced 2nd in Group D (beat Turkiye; held USA and Paraguay); well-organised and physical,confederation_calibration,2026-06-28
+Cape Verde,12,1.0,-5,15,CAF calibration tempered: debutants reached R32 via three draws incl 0-0 vs Spain; stout compact defence but very limited attack (2 goals),confederation_calibration,2026-06-28
+Ghana,12,1.02,0,0,CAF calibration tempered: advanced as a best third-placed team (4 pts); young attacking talent; reduced now that results inform ratings,confederation_calibration,2026-06-28
+Morocco,15,1.03,0,0,Group-stage form plus CAF calibration: strong Group C (drew Brazil; beat Scotland) finishing runner-up; AFCON pedigree historically underrated by Elo at WC,group_stage_form,2026-06-28
+Ecuador,10,1.02,0,5,Group-stage form: beat Germany to reach R32 as a best third; organised CONMEBOL side; solid defensively; modestly underrated by Elo,group_stage_form,2026-06-28
+Norway,0,1.04,0,0,Form adjustment: heavy 1-4 loss to France was a dead rubber with ~10 changes after qualifying; Haaland-led attack potent (won opening two); offsets rotation-distorted result,group_stage_form,2026-06-28
+Belgium,-15,0.97,0,0,Group-stage form: laboured to top Group G with two goalless draws (Egypt and Iran) and only beat New Zealand; underwhelming relative to a high Elo prior,group_stage_form,2026-06-28
+Germany,0,1.0,0,-10,Group-stage form: topped Group E but conceded in all three games incl a 2-1 loss to Ecuador; slight defensive downgrade despite a strong attack,group_stage_form,2026-06-28
