@@ -1,20 +1,20 @@
 match_id,stage,date,venue,home_slot,away_slot,home_team,away_team,source
-73,R32,2026-06-28,Los Angeles,RU_A,W_B,,,projected
-74,R32,2026-06-29,Mexico City,W_E,3RD_pool,,,projected
-75,R32,2026-06-30,Boston,W_F,RU_C,,,projected
-76,R32,2026-06-29,Houston,W_C,RU_F,,,projected
-77,R32,2026-07-01,Atlanta,W_L,3RD_pool,,,projected
-78,R32,2026-07-01,Seattle,W_G,3RD_pool,,,projected
-79,R32,2026-07-01,Santa Clara,W_D,3RD_pool,,,projected
-80,R32,2026-07-02,Los Angeles,W_H,RU_J,,,projected
-81,R32,2026-07-02,Vancouver,RU_B,3RD_pool,,,projected
-82,R32,2026-07-02,Toronto,W_K,3RD_pool,,,projected
-83,R32,2026-07-03,Arlington,RU_D,RU_G,,,projected
-84,R32,2026-07-03,Miami Gardens,W_J,RU_H,,,projected
-85,R32,2026-06-30,Philadelphia,W_I,3RD_pool,,,projected
-86,R32,2026-06-28,Guadalajara,W_A,RU_E,,,projected
-87,R32,2026-07-01,Kansas City,RU_K,RU_I,,,projected
-88,R32,2026-07-02,Monterrey,RU_L,3RD_pool,,,projected
+73,R32,2026-06-30,East Rutherford,W_I,3RD_pool,France,Sweden,reported_2026-06-27
+74,R32,2026-06-29,Foxborough,W_E,3RD_pool,Germany,Paraguay,reported_2026-06-27
+75,R32,2026-06-29,Guadalajara,W_F,RU_C,Netherlands,Morocco,reported_2026-06-27
+76,R32,2026-06-28,Inglewood,RU_A,RU_B,South Africa,Canada,reported_2026-06-27
+77,R32,2026-07-02,Los Angeles,W_H,RU_J,Spain,Austria,reported_2026-06-27
+78,R32,2026-07-02,Toronto,RU_K,RU_L,Portugal,Croatia,reported_2026-06-27
+79,R32,2026-07-02,Vancouver,W_B,3RD_pool,Switzerland,Algeria,reported_2026-06-27
+80,R32,2026-07-03,Kansas City,W_K,3RD_pool,Colombia,Ghana,reported_2026-06-27
+81,R32,2026-06-29,Houston,W_C,RU_F,Brazil,Japan,reported_2026-06-27
+82,R32,2026-06-30,Arlington,RU_E,RU_I,Cote d'Ivoire,Norway,reported_2026-06-27
+83,R32,2026-07-01,Atlanta,W_L,3RD_pool,England,DR Congo,reported_2026-06-27
+84,R32,2026-06-30,Mexico City,W_A,3RD_pool,Mexico,Ecuador,reported_2026-06-27
+85,R32,2026-07-03,Miami Gardens,W_J,RU_H,Argentina,Cape Verde,reported_2026-06-27
+86,R32,2026-07-03,Dallas,RU_G,RU_D,Egypt,Australia,reported_2026-06-27
+87,R32,2026-07-01,Santa Clara,W_D,3RD_pool,USA,Bosnia and Herzegovina,reported_2026-06-27
+88,R32,2026-07-01,Seattle,W_G,3RD_pool,Belgium,Senegal,reported_2026-06-27
 89,R16,2026-07-04,Los Angeles,W73,W74,,,bracket_tree
 90,R16,2026-07-05,Houston,W75,W76,,,bracket_tree
 91,R16,2026-07-06,Atlanta,W77,W78,,,bracket_tree

@@ -1,37 +1,37 @@
 player,team,position,goal_share_prior,penalty_taker,current_wc_goals,source
-Lionel Messi,Argentina,FW,0.34,1,5,reported_2026-06-26
-Julian Alvarez,Argentina,FW,0.24,0,2,reported_2026-06-26
+Lionel Messi,Argentina,FW,0.34,1,6,reported_2026-06-28
+Julian Alvarez,Argentina,FW,0.24,0,2,reported_2026-06-28
 Lautaro Martinez,Argentina,FW,0.22,0,1,prior
-Kylian Mbappe,France,FW,0.36,1,4,reported_2026-06-26
-Ousmane Dembele,France,FW,0.18,0,1,prior
+Kylian Mbappe,France,FW,0.36,1,4,reported_2026-06-28
+Ousmane Dembele,France,FW,0.18,0,4,reported_2026-06-28
 Marcus Thuram,France,FW,0.16,0,1,prior
-Lamine Yamal,Spain,FW,0.20,0,2,prior
-Alvaro Morata,Spain,FW,0.22,0,2,prior
+Lamine Yamal,Spain,FW,0.20,0,2,reported_2026-06-28
+Alvaro Morata,Spain,FW,0.22,0,2,reported_2026-06-28
 Mikel Oyarzabal,Spain,FW,0.16,1,1,prior
 Nico Williams,Spain,FW,0.16,0,1,prior
-Vinicius Junior,Brazil,FW,0.30,0,4,reported_2026-06-26
+Vinicius Junior,Brazil,FW,0.30,0,4,reported_2026-06-28
 Rodrygo,Brazil,FW,0.20,0,1,prior
-Raphinha,Brazil,FW,0.22,1,2,prior
-Harry Kane,England,FW,0.40,1,2,reported_2026-06-26
+Raphinha,Brazil,FW,0.22,1,2,reported_2026-06-28
+Harry Kane,England,FW,0.40,1,3,reported_2026-06-28
 Bukayo Saka,England,FW,0.18,0,1,prior
 Phil Foden,England,FW,0.15,0,1,prior
 Cole Palmer,England,FW,0.16,1,1,prior
-Cristiano Ronaldo,Portugal,FW,0.34,1,3,reported_2026-06-26
+Cristiano Ronaldo,Portugal,FW,0.34,1,3,reported_2026-06-28
 Bruno Fernandes,Portugal,MF,0.18,1,1,prior
 Rafael Leao,Portugal,FW,0.18,0,1,prior
-Memphis Depay,Netherlands,FW,0.28,1,2,prior
-Cody Gakpo,Netherlands,FW,0.22,0,2,prior
+Memphis Depay,Netherlands,FW,0.28,1,2,reported_2026-06-28
+Cody Gakpo,Netherlands,FW,0.22,0,2,reported_2026-06-28
 Xavi Simons,Netherlands,MF,0.16,0,1,prior
-Erling Haaland,Norway,FW,0.46,1,4,reported_2026-06-26
+Erling Haaland,Norway,FW,0.46,1,4,reported_2026-06-28
 Alexander Sorloth,Norway,FW,0.18,0,1,prior
-Deniz Undav,Germany,FW,0.26,0,3,reported_2026-06-26
+Deniz Undav,Germany,FW,0.26,0,3,reported_2026-06-28
 Jamal Musiala,Germany,MF,0.22,0,2,prior
 Florian Wirtz,Germany,MF,0.16,0,1,prior
 Kai Havertz,Germany,FW,0.18,0,1,prior
 Romelu Lukaku,Belgium,FW,0.36,0,2,prior
 Kevin De Bruyne,Belgium,MF,0.18,1,1,prior
 Jeremy Doku,Belgium,FW,0.16,0,1,prior
-Jonathan David,Canada,FW,0.40,1,3,reported_2026-06-26
+Jonathan David,Canada,FW,0.40,1,3,reported_2026-06-28
 Alphonso Davies,Canada,DF,0.16,0,1,prior
 Federico Valverde,Uruguay,MF,0.22,0,1,prior
 Darwin Nunez,Uruguay,FW,0.30,0,2,prior
@@ -41,20 +41,20 @@ James Rodriguez,Colombia,MF,0.22,1,1,prior
 Jhon Duran,Colombia,FW,0.20,0,1,prior
 Mohamed Salah,Egypt,FW,0.46,1,2,prior
 Hakim Ziyech,Morocco,MF,0.20,1,1,prior
-Youssef En-Nesyri,Morocco,FW,0.30,0,2,prior
+Youssef En-Nesyri,Morocco,FW,0.30,0,2,reported_2026-06-28
 Brahim Diaz,Morocco,MF,0.18,0,1,prior
 Sadio Mane,Senegal,FW,0.34,1,2,prior
 Nicolas Jackson,Senegal,FW,0.24,0,1,prior
 Christian Pulisic,USA,FW,0.30,1,2,prior
 Folarin Balogun,USA,FW,0.26,0,1,prior
 Ricardo Pepi,USA,FW,0.20,0,1,prior
-Santiago Gimenez,Mexico,FW,0.32,0,2,prior
+Santiago Gimenez,Mexico,FW,0.32,0,2,reported_2026-06-28
 Raul Jimenez,Mexico,FW,0.24,1,1,prior
 Takefusa Kubo,Japan,FW,0.24,0,1,prior
 Kaoru Mitoma,Japan,FW,0.22,0,1,prior
 Ayase Ueda,Japan,FW,0.22,0,1,prior
 Son Heung-min,Korea Republic,FW,0.38,1,2,prior
-Alexander Isak,Sweden,FW,0.34,0,2,prior
+Alexander Isak,Sweden,FW,0.34,0,2,reported_2026-06-28
 Viktor Gyokeres,Sweden,FW,0.30,1,1,prior
 Marko Arnautovic,Austria,FW,0.28,1,1,prior
 Riyad Mahrez,Algeria,FW,0.30,1,1,prior
